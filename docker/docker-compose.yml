@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  playwright-tests:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: hrlens-playwright-container
+    environment:
+      - CI=true
+      - BASE_URL=${BASE_URL:-https://reqres.in}
+      - API_BASE_URL=${API_BASE_URL:-https://reqres.in}
+      - GOOGLE_SHEET_ID=${GOOGLE_SHEET_ID}
+    volumes:
+      - ../reports:/app/reports
+      - ../logs:/app/logs
+    command: npm test

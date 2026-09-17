@@ -1,0 +1,11 @@
+{
+  "playwright.env": {
+    "NODE_ENV": "development"
+  },
+  "playwright.reporters": [
+    ["html", { "open": "never" }],
+    ["list"]
+  ],
+  "editor.formatOnSave": true,
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

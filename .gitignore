@@ -1,0 +1,15 @@
+node_modules/
+reports/
+logs/*.log
+!logs/.gitkeep
+.auth/*.json
+!.auth/.gitkeep
+.env
+credentials.json
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+dist/
+.vscode/*
+!.vscode/settings.json

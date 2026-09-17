@@ -1,0 +1,9 @@
+node_modules
+reports
+logs/*.log
+.auth/*.json
+.env
+playwright-report
+test-results
+.git
+.vscode
