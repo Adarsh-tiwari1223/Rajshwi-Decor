@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker';
+import { fakerEN_IN as faker } from '@faker-js/faker';
 
 export interface LeadData {
   customerName: string;
@@ -7,7 +7,9 @@ export interface LeadData {
   requirement: string;
   budget: string;
   city: string;
+  state: string;
   address: string;
+  pinCode: string;
   notes: string;
 }
 
@@ -19,17 +21,25 @@ export class LeadDataGenerator {
       'Full 3BHK Villa Interior',
       'Curtains & Luxury Furnishing',
       'Commercial Office Renovation',
-      'Wallpaper & Wall Paneling'
+      'Wallpaper & Wall Paneling',
+      'Wooden Flooring & Wardrobes',
+      'False Ceiling & Lighting Design'
     ];
 
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
+    const customerName = `${firstName} ${lastName}`;
+
     return {
-      customerName: faker.person.fullName(),
-      phone: faker.helpers.fromRegExp('+919[0-9]{9}'),
-      email: faker.internet.email().toLowerCase(),
+      customerName,
+      phone: faker.helpers.fromRegExp('+91[6-9][0-9]{9}'),
+      email: faker.internet.email({ firstName, lastName }).toLowerCase(),
       requirement: faker.helpers.arrayElement(requirements),
-      budget: `₹${faker.number.int({ min: 100000, max: 2500000 }).toLocaleString('en-IN')}`,
+      budget: `₹${faker.number.int({ min: 150000, max: 3500000 }).toLocaleString('en-IN')}`,
       city: faker.location.city(),
+      state: faker.location.state(),
       address: faker.location.streetAddress(),
+      pinCode: faker.location.zipCode('######'),
       notes: faker.lorem.sentence(),
       ...overrides
     };
