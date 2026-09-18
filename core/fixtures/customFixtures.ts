@@ -3,12 +3,14 @@ import { LoginPage } from '../../pages/LoginPage';
 import { DashboardPage } from '../../pages/DashboardPage';
 import { UserApiClient } from '../api/UserApiClient';
 import { GoogleSheetsService } from '../../utils/googleSheets';
+import { GoogleDriveService } from '../../utils/googleDrive';
 
 type CustomFixtures = {
   loginPage: LoginPage;
   dashboardPage: DashboardPage;
   userApiClient: UserApiClient;
   googleSheetsService: GoogleSheetsService;
+  googleDriveService: GoogleDriveService;
 };
 
 export const test = base.extend<CustomFixtures>({
@@ -31,6 +33,12 @@ export const test = base.extend<CustomFixtures>({
     const sheetsService = new GoogleSheetsService();
     await sheetsService.initialize();
     await use(sheetsService);
+  },
+
+  googleDriveService: async ({}, use) => {
+    const driveService = new GoogleDriveService();
+    await driveService.initialize();
+    await use(driveService);
   }
 });
 
