@@ -1,8 +1,0 @@
-{
-  "theme": "light",
-  "notifications": {
-    "emailAlerts": true,
-    "smsAlerts": false
-  },
-  "crmRoles": ["Admin", "Sales Manager", "Designer", "Executive"]
-}

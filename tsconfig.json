@@ -21,6 +21,7 @@
     "core/**/*.ts",
     "pages/**/*.ts",
     "tests/**/*.ts",
+    "testdata/**/*.ts",
     "utils/**/*.ts",
     "playwright.config.ts"
   ],
