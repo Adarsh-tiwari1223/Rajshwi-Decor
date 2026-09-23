@@ -5,7 +5,7 @@ import path from 'path';
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const BASE_URL = process.env.BASE_URL || 'https://reqres.in';
+const BASE_URL = process.env.BASE_URL || 'https://crm-stg.rajasvidecor.com';
 
 export default defineConfig({
   testDir: './tests',
@@ -35,7 +35,7 @@ export default defineConfig({
       name: 'api-tests',
       testMatch: /.*\.api\.spec\.ts/,
       use: {
-        baseURL: process.env.API_BASE_URL || 'https://reqres.in',
+        baseURL: process.env.API_BASE_URL || 'https://crm-stg-api.rajasvidecor.com',
         extraHTTPHeaders: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
@@ -47,7 +47,7 @@ export default defineConfig({
       testMatch: /.*\.ui\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
-        baseURL: process.env.BASE_URL || 'https://reqres.in'
+        baseURL: process.env.BASE_URL || 'https://crm-stg.rajasvidecor.com'
       }
     },
     {
@@ -55,7 +55,7 @@ export default defineConfig({
       testMatch: /.*\.ui\.spec\.ts/,
       use: {
         ...devices['Desktop Firefox'],
-        baseURL: process.env.BASE_URL || 'https://reqres.in'
+        baseURL: process.env.BASE_URL || 'https://crm-stg.rajasvidecor.com'
       }
     },
     {

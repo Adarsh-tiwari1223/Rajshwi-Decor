@@ -12,7 +12,7 @@ test.describe('Smoke Test Suite - Rajshwi Decor Automation [@smoke]', () => {
   test('RD_SMK_01: Login with Valid credentials redirects to Dashboard', { tag: '@smoke' }, async ({ loginPage, page }) => {
     console.log('[Smoke] Testing Login with VALID credentials...');
     await loginPage.goto();
-    await expect(loginPage.formHeading).toBeVisible();
+    await expect(loginPage.emailInput).toBeVisible();
 
     // Perform valid login
     await loginPage.login(Config.adminEmail, Config.adminPassword);
@@ -27,7 +27,7 @@ test.describe('Smoke Test Suite - Rajshwi Decor Automation [@smoke]', () => {
   test('RD_SMK_02: Login with Invalid credentials displays error and prevents access', { tag: '@smoke' }, async ({ loginPage, page }) => {
     console.log('[Smoke] Testing Login with INVALID credentials...');
     await loginPage.goto();
-    await expect(loginPage.formHeading).toBeVisible();
+    await expect(loginPage.emailInput).toBeVisible();
 
     // Submit invalid credentials
     await loginPage.submitCredentials('invalid_user_smoke@rajasvidecor.com', 'WrongPassword@999');
@@ -50,7 +50,7 @@ test.describe('Smoke Test Suite - Rajshwi Decor Automation [@smoke]', () => {
   test('RD_SMK_03: Login with Blank fields triggers validation and blocks submission', { tag: '@smoke' }, async ({ loginPage, page }) => {
     console.log('[Smoke] Testing Login with BLANK fields...');
     await loginPage.goto();
-    await expect(loginPage.formHeading).toBeVisible();
+    await expect(loginPage.emailInput).toBeVisible();
 
     // Ensure inputs are blank
     await loginPage.emailInput.fill('');

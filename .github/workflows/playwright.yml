@@ -16,6 +16,11 @@ on:
           - 'smoke'
           - 'all'
 
+# Cancel outdated workflow runs if there are multiple pushes to the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Run Playwright Test Suite
@@ -39,18 +44,20 @@ jobs:
       run: npx playwright install --with-deps
 
     - name: Create .env File from Secret
-      if: env.HAS_SECRET != ''
       env:
-        HAS_SECRET: ${{ secrets.ENV_FILE }}
+        ENV_FILE_CONTENT: ${{ secrets.ENV_FILE }}
       run: |
-        echo "${{ secrets.ENV_FILE }}" > .env
+        if [ -n "$ENV_FILE_CONTENT" ]; then
+          echo "$ENV_FILE_CONTENT" > .env
+          echo ".env file successfully created from ENV_FILE secret."
+        else
+          echo "Warning: ENV_FILE secret is empty. Using default staging environment configuration."
+        fi
 
     - name: Run Playwright Tests
       env:
-        BASE_URL: ${{ secrets.BASE_URL || 'https://reqres.in' }}
-        API_BASE_URL: ${{ secrets.API_BASE_URL || 'https://reqres.in' }}
-        GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
-        GOOGLE_SERVICE_ACCOUNT_EMAIL: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
+        BASE_URL: https://crm-stg.rajasvidecor.com
+        API_BASE_URL: https://crm-stg-api.rajasvidecor.com
       run: |
         if [ "${{ github.event.inputs.suite }}" = "all" ]; then
           echo "Executing Full Test Suite..."

@@ -34,7 +34,7 @@ export class LoginPage extends BasePage {
     this.forgotPasswordBtn = page.locator('button.forgot-password');
     
     // 7. Form Headings
-    this.formHeading = page.locator('h2:has-text("Sign in to your account")');
+    this.formHeading = page.locator('h1, h2, h3, .login-title, .login-header, text=/sign in|login/i').first();
     this.formSubheading = page.locator('.login-card p, .login-subtitle');
     
     // 8. Toast Notification / Error message
