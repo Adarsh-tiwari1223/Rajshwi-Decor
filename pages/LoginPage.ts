@@ -60,7 +60,23 @@ export class LoginPage extends BasePage {
       await this.click(this.rememberMeCheckbox, 'Remember Me Checkbox');
     }
 
+    // 1. Monitor login API and wait for status 200 OK
+    const loginResponsePromise = this.page.waitForResponse(
+      res => res.url().toLowerCase().includes('/api/user/login') && res.status() === 200,
+      { timeout: 45000 }
+    );
+
+    // 2. Click Sign In Button
     await this.click(this.loginSubmitBtn, 'Sign In Button');
+
+    // 3. Ensure login API returns 200 before proceeding
+    await loginResponsePromise;
+
+    // 4. Wait for dashboard transition (URL /dashboard or visible dashboard indicator)
+    await this.page.waitForURL('**/dashboard**', { timeout: 15000 }).catch(() => {});
+    const dashboardIndicator = this.page.locator('span:has-text("Dashboard"), .rd-dashboard, text=WELCOME BACK, text=Welcome back').first();
+    await dashboardIndicator.waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
+    await this.page.waitForTimeout(500);
   }
 
   /**
