@@ -74,7 +74,7 @@ export class LoginPage extends BasePage {
 
     // 4. Wait for dashboard transition (URL /dashboard or visible dashboard indicator)
     await this.page.waitForURL('**/dashboard**', { timeout: 15000 }).catch(() => {});
-    const dashboardIndicator = this.page.locator('span:has-text("Dashboard"), .rd-dashboard, text=WELCOME BACK, text=Welcome back').first();
+    const dashboardIndicator = this.page.locator('.rd-dashboard, .rd-welcome-banner, .layout-topbar, span:has-text("Dashboard")').first();
     await dashboardIndicator.waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
     await this.page.waitForTimeout(500);
   }

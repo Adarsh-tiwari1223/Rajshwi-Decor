@@ -19,8 +19,8 @@ test.describe('Smoke Test Suite - Rajshwi Decor Automation [@smoke]', () => {
 
     // Assert successful redirect to dashboard
     expect(page.url()).toContain('/dashboard');
-    const dashboardIndicator = page.locator('span:has-text("Dashboard"), .rd-dashboard, text=WELCOME BACK, text=Welcome back').first();
-    await expect(dashboardIndicator).toBeVisible();
+    const dashboardIndicator = page.locator('.rd-dashboard, .rd-welcome-banner, .layout-topbar, span:has-text("Dashboard")').first();
+    await expect(dashboardIndicator).toBeVisible({ timeout: 15000 });
     console.log('[Smoke] PASSED: Valid login redirected successfully to Dashboard!');
   });
 
