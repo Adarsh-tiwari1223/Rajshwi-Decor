@@ -4,6 +4,7 @@ import { DashboardPage } from '../../pages/DashboardPage';
 import { ContactPage } from '../../pages/lead/ContactPage';
 import { MyLeadPage } from '../../pages/lead/MyLeadPage';
 import { LeadDetailsPage } from '../../pages/lead/LeadDetailsPage';
+import { ProductMasterPage } from '../../pages/masters/ProductMasterPage';
 import { AuthApiClient } from '../api/AuthApiClient';
 import { RoleApiClient } from '../api/RoleApiClient';
 import { UserApiClient } from '../api/UserApiClient';
@@ -19,6 +20,7 @@ type CustomFixtures = {
   contactPage: ContactPage;
   myLeadPage: MyLeadPage;
   leadDetailsPage: LeadDetailsPage;
+  productMasterPage: ProductMasterPage;
   authApiClient: AuthApiClient;
   roleApiClient: RoleApiClient;
   userApiClient: UserApiClient;
@@ -53,6 +55,11 @@ export const test = base.extend<CustomFixtures>({
   leadDetailsPage: async ({ page }, use) => {
     const leadDetailsPage = new LeadDetailsPage(page);
     await use(leadDetailsPage);
+  },
+
+  productMasterPage: async ({ page }, use) => {
+    const productMasterPage = new ProductMasterPage(page);
+    await use(productMasterPage);
   },
 
   authApiClient: async ({ request }, use) => {

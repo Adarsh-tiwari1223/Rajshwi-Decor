@@ -25,6 +25,14 @@ export abstract class BasePage {
     await locator.fill(text);
   }
 
+  async fill(locator: Locator, text: string, description?: string): Promise<void> {
+    if (description) {
+      logger.info(`Filling ${description}: ${text}`);
+    }
+    await locator.waitFor({ state: 'visible' });
+    await locator.fill(text);
+  }
+
   async getText(locator: Locator): Promise<string> {
     await locator.waitFor({ state: 'visible' });
     return (await locator.textContent()) || '';
