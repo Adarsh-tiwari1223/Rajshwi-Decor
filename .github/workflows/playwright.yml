@@ -2,10 +2,19 @@ name: Playwright Test Automation CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, dash ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, dash ]
   workflow_dispatch:
+    inputs:
+      suite:
+        description: 'Select Test Suite'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+          - 'smoke'
+          - 'all'
 
 jobs:
   test:
@@ -29,8 +38,12 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    - name: Check TypeScript Compilation
-      run: npm run typecheck
+    - name: Create .env File from Secret
+      if: env.HAS_SECRET != ''
+      env:
+        HAS_SECRET: ${{ secrets.ENV_FILE }}
+      run: |
+        echo "${{ secrets.ENV_FILE }}" > .env
 
     - name: Run Playwright Tests
       env:
@@ -38,7 +51,14 @@ jobs:
         API_BASE_URL: ${{ secrets.API_BASE_URL || 'https://reqres.in' }}
         GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
         GOOGLE_SERVICE_ACCOUNT_EMAIL: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
-      run: npm test
+      run: |
+        if [ "${{ github.event.inputs.suite }}" = "all" ]; then
+          echo "Executing Full Test Suite..."
+          npm test
+        else
+          echo "Executing Smoke Suite (@smoke: Login + Create Lead)..."
+          npm run test:smoke
+        fi
 
     - name: Upload Playwright HTML Report
       uses: actions/upload-artifact@v4

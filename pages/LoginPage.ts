@@ -80,6 +80,30 @@ export class LoginPage extends BasePage {
   }
 
   /**
+   * Submit login credentials without waiting for 200 OK (for invalid / negative testing)
+   */
+  async submitCredentials(email: string, password: string): Promise<void> {
+    if (email) {
+      await this.type(this.emailInput, email, 'Email Address Field');
+    } else {
+      await this.emailInput.clear();
+    }
+    if (password) {
+      await this.type(this.passwordInput, password, 'Password Field');
+    } else {
+      await this.passwordInput.clear();
+    }
+    await this.click(this.loginSubmitBtn, 'Sign In Button');
+  }
+
+  /**
+   * Click Sign In directly with whatever input is currently present (for blank form testing)
+   */
+  async clickSignIn(): Promise<void> {
+    await this.click(this.loginSubmitBtn, 'Sign In Button');
+  }
+
+  /**
    * Toggle password field visibility
    */
   async togglePasswordVisibility(): Promise<void> {

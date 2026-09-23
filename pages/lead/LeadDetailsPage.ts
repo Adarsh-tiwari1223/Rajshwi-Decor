@@ -157,16 +157,6 @@ export class AddRequirementModal {
     await this.page.waitForTimeout(200);
   }
 
-  async clickNext(): Promise<void> {
-    await this.nextBtn.click();
-    await this.page.waitForTimeout(500);
-  }
-
-  async clickBack(): Promise<void> {
-    await this.backBtn.click();
-    await this.page.waitForTimeout(500);
-  }
-
   async setSampleRequired(required = true): Promise<void> {
     console.log(`]: Setting Sample Required: ${required}`);
     const label = this.page.locator('.p-dialog:has(.p-dialog-title:has-text("Requirement")) label[for="sampleRequired"], .p-dialog:has(.p-dialog-title:has-text("Requirement")) label:has-text("Sample Required")').first();
