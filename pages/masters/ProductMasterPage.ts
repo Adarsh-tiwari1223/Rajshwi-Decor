@@ -263,7 +263,7 @@ export class ProductMasterPage extends BasePage {
     this.retailModalCancelBtn = this.retailPriceModal.locator('button[aria-label="Cancel"]').first();
     this.retailModalSaveBtn = this.retailPriceModal.locator('button[aria-label="Save"][type="submit"]').first();
 
-    this.addWholesalePriceBtn = this.stepperDialog.locator('button:has-text("Wholesale")').first();
+    this.addWholesalePriceBtn = this.stepperDialog.locator('button:has-text("Add Quantity Range"), button[aria-label="Add Quantity Range"], button:has-text("Wholesale")').first();
     this.wholesalePriceModal = page.locator('.p-dialog:has(.p-dialog-title:has-text("Add Wholesale Price Range"))').first();
     this.wholesaleQtyFromInput = this.wholesalePriceModal.locator('div:has(> label:has-text("Quantity From")) input.p-inputnumber-input');
     this.wholesaleQtyToInput = this.wholesalePriceModal.locator('div:has(> label:has-text("Quantity To")) input.p-inputnumber-input');
