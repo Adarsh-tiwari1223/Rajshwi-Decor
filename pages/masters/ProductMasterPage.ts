@@ -35,6 +35,7 @@ export class ProductMasterPage extends BasePage {
   readonly saveExitBtn: Locator;
   readonly nextBtn: Locator;
   readonly finalSaveBtn: Locator;
+  readonly formErrorMessages: Locator;
 
   // =========================================================================
   // 4. STEP 1: BASIC INFORMATION
@@ -170,6 +171,25 @@ export class ProductMasterPage extends BasePage {
   readonly imagesDropzone: Locator;
   readonly imagesFileInput: Locator;
 
+  // =========================================================================
+  // 10. TABLE PREVIEW & POPUP MODALS
+  // =========================================================================
+  readonly productImagesModal: Locator;
+  readonly productImagesModalTitle: Locator;
+  readonly productImagesCountBadge: Locator;
+  readonly productImagesModalCloseBtn: Locator;
+  readonly productImagesContainer: Locator;
+  readonly productImagesList: Locator;
+
+  readonly previewDimensionsModal: Locator;
+  readonly previewDimensionsModalTitle: Locator;
+  readonly previewDimensionsModalCloseBtn: Locator;
+  readonly previewDimensionsContent: Locator;
+
+  readonly previewDescriptionModal: Locator;
+  readonly previewPricingModal: Locator;
+  readonly previewStockModal: Locator;
+
   constructor(page: Page) {
     super(page);
 
@@ -200,6 +220,7 @@ export class ProductMasterPage extends BasePage {
     this.saveExitBtn = this.stepperDialog.locator('button[aria-label="SAVE & EXIT"]');
     this.nextBtn = this.stepperDialog.locator('button[aria-label="NEXT"]');
     this.finalSaveBtn = this.stepperDialog.locator('button[aria-label="SAVE"]');
+    this.formErrorMessages = this.stepperDialog.locator('small.p-error, small[style*="239, 68, 68"], small.text-red-500');
 
     // 4. Step 1: Basic Information
     this.productNameInput = this.stepperDialog.locator('input[name="product_Name"]');
@@ -316,6 +337,23 @@ export class ProductMasterPage extends BasePage {
     // 9. Step 6: Images
     this.imagesDropzone = this.stepperDialog.locator('label[for="product-images-input"]');
     this.imagesFileInput = this.stepperDialog.locator('input#product-images-input[type="file"]');
+
+    // 10. Table Preview Modals
+    this.productImagesModal = page.locator('.p-dialog:has(.p-dialog-title:has-text("Product Images"))');
+    this.productImagesModalTitle = this.productImagesModal.locator('.p-dialog-title span:has-text("Product Images")');
+    this.productImagesCountBadge = this.productImagesModal.locator('.p-dialog-title span').nth(1);
+    this.productImagesModalCloseBtn = this.productImagesModal.locator('.p-dialog-header-close, button[aria-label="Close"]');
+    this.productImagesContainer = this.productImagesModal.locator('.p-dialog-content');
+    this.productImagesList = this.productImagesModal.locator('.p-dialog-content img');
+
+    this.previewDimensionsModal = page.locator('.p-dialog:has(.p-dialog-title:has-text("Product Dimensions & Weight"))');
+    this.previewDimensionsModalTitle = this.previewDimensionsModal.locator('.p-dialog-title');
+    this.previewDimensionsModalCloseBtn = this.previewDimensionsModal.locator('.p-dialog-header-close, button[aria-label="Close"]');
+    this.previewDimensionsContent = this.previewDimensionsModal.locator('.p-dialog-content');
+
+    this.previewDescriptionModal = page.locator('.p-dialog:has(.p-dialog-title:has-text("Description"))');
+    this.previewPricingModal = page.locator('.p-dialog:has(.p-dialog-title:has-text("Pricing"))');
+    this.previewStockModal = page.locator('.p-dialog:has(.p-dialog-title:has-text("Stock"))');
   }
 
   // =========================================================================
@@ -420,4 +458,113 @@ export class ProductMasterPage extends BasePage {
     await this.click(editBtn, `Edit Product in row ${index + 1}`);
     await this.stepperDialog.waitFor({ state: 'visible', timeout: 15000 });
   }
+
+  async clickDeleteProduct(index: number = 0): Promise<void> {
+    const row = this.tableRows.nth(index);
+    const deleteBtn = row.locator('.actions button:has(.pi-trash), button:has(.pi-trash)').first();
+    await this.click(deleteBtn, `Delete Product in row ${index + 1}`);
+  }
+
+  async confirmDialogAccept(): Promise<void> {
+    const acceptBtn = this.page.locator('.p-confirm-dialog-accept, .p-dialog button:has-text("Yes"), button[aria-label="Yes"]').first();
+    if (await acceptBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await this.click(acceptBtn, 'Confirm Dialog Accept Button');
+      await this.page.waitForTimeout(500);
+      await this.page.waitForLoadState('networkidle').catch(() => {});
+    }
+  }
+
+  async getProductStatus(index: number = 0): Promise<string> {
+    const row = this.tableRows.nth(index);
+    const statusTag = row.locator('.p-tag, .status-badge, td.status, td:has(.p-tag)').first();
+    if (await statusTag.isVisible({ timeout: 3000 }).catch(() => false)) {
+      return (await statusTag.innerText()).trim();
+    }
+    const fullRowText = await row.innerText();
+    if (/inactive/i.test(fullRowText)) return 'Inactive';
+    if (/active/i.test(fullRowText)) return 'Active';
+    return '';
+  }
+
+  // =========================================================================
+  // TABLE CELL INTERACTION & PREVIEW MODAL HELPERS
+  // =========================================================================
+  async clickImageCell(rowIndex: number = 0): Promise<void> {
+    const row = this.tableRows.nth(rowIndex);
+    const imageCell = row.locator('td').nth(3);
+    const clickable = imageCell.locator('img, button, [role="button"], span.cursor-pointer, div.cursor-pointer, a').first();
+    if (await clickable.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await this.click(clickable, `Image Cell thumbnail in row ${rowIndex + 1}`);
+    } else {
+      await this.click(imageCell, `Image Cell in row ${rowIndex + 1}`);
+    }
+    await this.productImagesModal.waitFor({ state: 'visible', timeout: 10000 });
+  }
+
+  async closeProductImagesModal(): Promise<void> {
+    await this.click(this.productImagesModalCloseBtn, 'Product Images Modal Close Button');
+    await this.productImagesModal.waitFor({ state: 'hidden', timeout: 10000 });
+  }
+
+  async verifyImageLoadsInModal(): Promise<{ src: string | null; isLoaded: boolean }> {
+    const firstImg = this.productImagesList.first();
+    await firstImg.waitFor({ state: 'visible', timeout: 10000 });
+    const src = await firstImg.getAttribute('src');
+    
+    // Check if the image element is naturally loaded in DOM
+    const isLoaded = await firstImg.evaluate((img: HTMLImageElement) => {
+      return img.complete && img.naturalWidth > 0;
+    });
+
+    return { src, isLoaded };
+  }
+
+  async clickDimensionsCell(rowIndex: number = 0): Promise<void> {
+    const row = this.tableRows.nth(rowIndex);
+    const trigger = row.locator('td').nth(9).locator('[title*="Dimensions" i], [aria-label*="Dimensions" i], button, span, i, div').first();
+    await this.click(trigger, `Dimensions icon in row ${rowIndex + 1}`);
+    await this.previewDimensionsModal.waitFor({ state: 'visible', timeout: 10000 });
+  }
+
+  async closeDimensionsModal(): Promise<void> {
+    await this.click(this.previewDimensionsModalCloseBtn, 'Product Dimensions Modal Close Button');
+    await this.previewDimensionsModal.waitFor({ state: 'hidden', timeout: 10000 });
+  }
+
+  async clickDescriptionCell(rowIndex: number = 0): Promise<void> {
+    const row = this.tableRows.nth(rowIndex);
+    const trigger = row.locator('td').nth(10).locator('button, [cursor="pointer"], .cursor-pointer, i, span').first();
+    await this.click(trigger, `Description trigger in row ${rowIndex + 1}`);
+    await this.previewDescriptionModal.waitFor({ state: 'visible', timeout: 8000 }).catch(() => {});
+  }
+
+  async clickPricingCell(rowIndex: number = 0): Promise<void> {
+    const row = this.tableRows.nth(rowIndex);
+    const trigger = row.locator('td').nth(19).locator('button, [cursor="pointer"], .cursor-pointer, i, span').first();
+    await this.click(trigger, `Pricing trigger in row ${rowIndex + 1}`);
+    await this.previewPricingModal.waitFor({ state: 'visible', timeout: 8000 }).catch(() => {});
+  }
+
+  async clickStockCell(rowIndex: number = 0): Promise<void> {
+    const row = this.tableRows.nth(rowIndex);
+    const trigger = row.locator('td').nth(20).locator('button, [cursor="pointer"], .cursor-pointer, i, span').first();
+    await this.click(trigger, `Stock trigger in row ${rowIndex + 1}`);
+    await this.previewStockModal.waitFor({ state: 'visible', timeout: 8000 }).catch(() => {});
+  }
+
+  // =========================================================================
+  // UNIVERSAL FORM VALIDATION ERROR HELPERS (INHERITED FROM BASEPAGE)
+  // =========================================================================
+  override async getFieldError(fieldName: string, container?: Locator): Promise<string> {
+    return super.getFieldError(fieldName, container || this.stepperDialog);
+  }
+
+  override async hasFieldError(fieldName: string, expectedPattern?: string | RegExp, container?: Locator): Promise<boolean> {
+    return super.hasFieldError(fieldName, expectedPattern, container || this.stepperDialog);
+  }
+
+  override async getAllVisibleErrors(container?: Locator): Promise<string[]> {
+    return super.getAllVisibleErrors(container || this.stepperDialog);
+  }
 }
+

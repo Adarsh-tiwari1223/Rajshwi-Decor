@@ -6,6 +6,8 @@
   "scripts": {
     "test": "playwright test --config=rajashvi.config.ts",
     "test:smoke": "playwright test tests/ui/smoke/smokeSuite.ui.spec.ts --project=chromium-ui --config=rajashvi.config.ts",
+    "test:masters:e2e": "playwright test tests/ui/masters/productMasterE2ELifecycle.ui.spec.ts --project=chromium-ui --config=rajashvi.config.ts",
+    "test:masters:val": "playwright test tests/ui/masters/productMasterValidation.ui.spec.ts --project=chromium-ui --config=rajashvi.config.ts",
     "test:ui": "playwright test --project=chromium-ui --config=rajashvi.config.ts",
     "test:api": "playwright test --project=api-tests --config=rajashvi.config.ts",
     "test:headed": "playwright test --headed --config=rajashvi.config.ts",
