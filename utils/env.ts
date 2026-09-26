@@ -21,6 +21,10 @@ export const Config = {
     { name: 'Amit Verma', email: process.env.USER_AMIT_EMAIL || '', password: process.env.USER_AMIT_PASSWORD || '' },
     { name: 'Sneha Joshi', email: process.env.USER_SNEHA_EMAIL || '', password: process.env.USER_SNEHA_PASSWORD || '' },
     { name: 'Vikas Mehta', email: process.env.USER_VIKAS_EMAIL || '', password: process.env.USER_VIKAS_PASSWORD || '' },
-    { name: 'Uday', email: process.env.USER_UDAY_EMAIL || '', password: process.env.USER_UDAY_PASSWORD || '' }
+    { name: 'Uday', email: process.env.USER_UDAY_EMAIL || '', password: process.env.USER_UDAY_PASSWORD || '' },
+    { name: 'Aakhnsha shrivastav', email: process.env.USER_AKANKSHA_EMAIL || 'aakanshashrivastava12@gmail.com', password: process.env.USER_AKANKSHA_PASSWORD || '1wPKPZj44z' }
   ]
 };
+
+export * from './userResolver';
+

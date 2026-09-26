@@ -29,9 +29,16 @@ type CustomFixtures = {
   adminToken: string;
   googleSheetsService: GoogleSheetsService;
   googleDriveService: GoogleDriveService;
+  currentUser: import('../../utils/userResolver').AppUser;
 };
 
 export const test = base.extend<CustomFixtures>({
+  currentUser: async ({}, use) => {
+    const { resolveUser } = await import('../../utils/userResolver');
+    const user = resolveUser();
+    await use(user);
+  },
+
   loginPage: async ({ page }, use) => {
     const loginPage = new LoginPage(page);
     await use(loginPage);

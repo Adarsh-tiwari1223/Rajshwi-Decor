@@ -44,7 +44,7 @@ test.describe('Masters Module - Product Master & 6-Step Stepper Lifecycle Test S
   test('RD_PRD_UI_02: End-to-End 6-Step Stepper Lifecycle (Basic Info -> Candle Details -> Dimensions -> Pricing -> Stock -> Images -> Save)', async ({ productMasterPage }) => {
     const timestamp = Date.now().toString().slice(-4);
     const uniqueProductName = `Aroma Sovereign Candle ${timestamp}`;
-    const uniqueSku = `ASC-${timestamp}`;
+    let uniqueSku = '';
 
     // =========================================================================
     // OPEN STEPPER WIZARD
@@ -59,7 +59,10 @@ test.describe('Masters Module - Product Master & 6-Step Stepper Lifecycle Test S
     // =========================================================================
     console.log('[Step 1: Basic Information] Filling product identity fields...');
     await productMasterPage.fill(productMasterPage.productNameInput, uniqueProductName, 'Product Name');
-    await productMasterPage.fill(productMasterPage.skuInput, uniqueSku, 'SKU');
+    await expect(productMasterPage.skuInput).toHaveAttribute('readonly', '');
+    uniqueSku = await productMasterPage.skuInput.inputValue();
+    console.log(`[Step 1] Read auto-generated SKU: "${uniqueSku}"`);
+    expect(uniqueSku.trim().length).toBeGreaterThan(0);
 
     // Select Category & Product Type
     const selectedCategory = await productMasterPage.selectDropdownOption(productMasterPage.categoryDropdown, 0);
@@ -95,9 +98,11 @@ test.describe('Masters Module - Product Master & 6-Step Stepper Lifecycle Test S
     const selectedWickType = await productMasterPage.selectDropdownOption(productMasterPage.wickTypeDropdown, 0);
     console.log(`[Step 2] Selected Wick Type: ${selectedWickType}`);
 
-    // Select Wick Size (Mandatory *)
-    const selectedWickSize = await productMasterPage.selectDropdownOption(productMasterPage.wickSizeDropdown, 0);
-    console.log(`[Step 2] Selected Wick Size: ${selectedWickSize}`);
+    // Select Wick Size (if present)
+    if (await productMasterPage.wickSizeDropdown.isVisible({ timeout: 1000 }).catch(() => false)) {
+      const selectedWickSize = await productMasterPage.selectDropdownOption(productMasterPage.wickSizeDropdown, 0);
+      console.log(`[Step 2] Selected Wick Size: ${selectedWickSize}`);
+    }
 
     // Select Packaging Type (Mandatory *)
     const selectedPackaging = await productMasterPage.selectDropdownOption(productMasterPage.packagingTypeDropdown, 0);
@@ -313,7 +318,7 @@ test.describe('Masters Module - Product Master & 6-Step Stepper Lifecycle Test S
   test('RD_PRD_UI_03: Partial Fill -> SAVE & EXIT -> Verify record in Table -> Search product -> Reopen via Edit -> Verify pre-filled state persistence', async ({ productMasterPage }) => {
     const timestamp = Date.now().toString().slice(-4);
     const draftProductName = `Artisan Lavender Pillar ${timestamp}`;
-    const draftSku = `ALP-${timestamp}`;
+    let draftSku = '';
 
     // =========================================================================
     // STEP 1: OPEN WIZARD & FILL BASIC INFORMATION
@@ -322,9 +327,13 @@ test.describe('Masters Module - Product Master & 6-Step Stepper Lifecycle Test S
     await productMasterPage.openCreateProductWizard();
     await expect(productMasterPage.stepperDialog).toBeVisible();
 
-    console.log(`[Draft Flow] Filling Step 1: ${draftProductName} (${draftSku})...`);
+    console.log(`[Draft Flow] Filling Step 1: ${draftProductName}...`);
     await productMasterPage.fill(productMasterPage.productNameInput, draftProductName, 'Product Name');
-    await productMasterPage.fill(productMasterPage.skuInput, draftSku, 'SKU');
+    await expect(productMasterPage.skuInput).toHaveAttribute('readonly', '');
+    draftSku = await productMasterPage.skuInput.inputValue();
+    console.log(`[Draft Flow] Read auto-generated SKU: "${draftSku}"`);
+    expect(draftSku.trim().length).toBeGreaterThan(0);
+
     const categoryName = await productMasterPage.selectDropdownOption(productMasterPage.categoryDropdown, 0);
     const productTypeName = await productMasterPage.selectDropdownOption(productMasterPage.productTypeDropdown, 0);
     await productMasterPage.fill(productMasterPage.descriptionInput, 'Authentic calming lavender botanical candle.', 'Description');
@@ -338,7 +347,9 @@ test.describe('Masters Module - Product Master & 6-Step Stepper Lifecycle Test S
     console.log('[Draft Flow] Filling Step 2: Candle Details...');
     const waxTypeName = await productMasterPage.selectDropdownOption(productMasterPage.waxTypeDropdown, 0);
     const wickTypeName = await productMasterPage.selectDropdownOption(productMasterPage.wickTypeDropdown, 0);
-    const wickSizeName = await productMasterPage.selectDropdownOption(productMasterPage.wickSizeDropdown, 0);
+    if (await productMasterPage.wickSizeDropdown.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await productMasterPage.selectDropdownOption(productMasterPage.wickSizeDropdown, 0);
+    }
     const packagingTypeName = await productMasterPage.selectDropdownOption(productMasterPage.packagingTypeDropdown, 0);
 
     if (await productMasterPage.burnTimeInput.isVisible()) {

@@ -140,8 +140,8 @@ export class DashboardPage extends BasePage {
     // 1. Check primary stages in SVG
     const svgGroup = this.page.locator(`svg[aria-label="Lead funnel by status"] g`).filter({ has: this.page.locator(`text:has-text("${stageName}")`) }).first();
     if (await svgGroup.isVisible({ timeout: 1500 }).catch(() => false)) {
-      // First <text> element inside stage group contains the numeric count
-      const countText = await svgGroup.locator('text').first().innerText();
+      // First <text> element inside stage group contains the numeric count (SVG elements use textContent)
+      const countText = (await svgGroup.locator('text').first().textContent()) || '';
       return parseInt(countText.trim(), 10) || 0;
     }
 
@@ -149,7 +149,7 @@ export class DashboardPage extends BasePage {
     const sideItem = this.page.locator(`div:has(> span[title="${stageName}"])`).first();
     if (await sideItem.isVisible({ timeout: 1500 }).catch(() => false)) {
       const countSpan = sideItem.locator('span').last();
-      const countText = await countSpan.innerText();
+      const countText = (await countSpan.textContent()) || '';
       return parseInt(countText.trim(), 10) || 0;
     }
 

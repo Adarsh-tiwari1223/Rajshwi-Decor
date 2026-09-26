@@ -41,6 +41,7 @@ export class ProductMasterPage extends BasePage {
   // =========================================================================
   readonly productNameInput: Locator;
   readonly skuInput: Locator;
+  readonly regenerateSkuBtn: Locator;
   readonly categoryDropdown: Locator;
   readonly productTypeDropdown: Locator;
   readonly brandDropdown: Locator;
@@ -204,6 +205,7 @@ export class ProductMasterPage extends BasePage {
     // 4. Step 1: Basic Information
     this.productNameInput = this.stepperDialog.locator('input[name="product_Name"]');
     this.skuInput = this.stepperDialog.locator('input[name="sku"]');
+    this.regenerateSkuBtn = this.stepperDialog.locator('button[title="Regenerate SKU"], button:has-text("↻")');
     this.categoryDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="category_Id"])');
     this.productTypeDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="product_Type_Id"])');
     this.brandDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="brand_Id"])');

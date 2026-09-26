@@ -48,6 +48,11 @@ export const CRM_USERS: UserCreds[] = [
     displayName: 'Uday',
     email: process.env.USER_UDAY_EMAIL || 'uday12@gmail.com',
     password: process.env.USER_UDAY_PASSWORD || '1234567'
+  },
+  {
+    displayName: 'Aakhnsha shrivastav',
+    email: process.env.USER_AKANKSHA_EMAIL || 'aakanshashrivastava12@gmail.com',
+    password: process.env.USER_AKANKSHA_PASSWORD || '1wPKPZj44z'
   }
 ];
 

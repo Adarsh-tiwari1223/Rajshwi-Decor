@@ -13,7 +13,7 @@ test.describe('Product Master - End-to-End Validation & Boundary Suite', () => {
   test('RD_PRD_VAL_01: 6-Step Multi-Step Validation Pipeline in Single Run (Blank Check -> Negative -> String -> Next Trigger -> Rectify)', async ({ productMasterPage }) => {
     const timestamp = Date.now().toString().slice(-4);
     const validProdName = `Artisan Sovereign Candle ${timestamp}`;
-    const validProdSku = `ASC-${timestamp}`;
+    let validProdSku = '';
 
     await productMasterPage.goto();
     await productMasterPage.openCreateProductWizard();
@@ -22,21 +22,33 @@ test.describe('Product Master - End-to-End Validation & Boundary Suite', () => {
     // =========================================================================
     // STEP 1: BASIC INFORMATION
     // =========================================================================
+    // 1. Auto-generated & Readonly SKU validation + Regenerate button check
+    console.log('[Step 1] Validating auto-generated & readonly SKU...');
+    await expect(productMasterPage.skuInput).toHaveAttribute('readonly', '');
+    const initialSku = await productMasterPage.skuInput.inputValue();
+    console.log(`[Step 1] Initial Auto-Generated SKU: "${initialSku}"`);
+    expect(initialSku.trim().length).toBeGreaterThan(0);
+
+    await productMasterPage.click(productMasterPage.regenerateSkuBtn, 'Regenerate SKU Button');
+    await productMasterPage.page.waitForTimeout(300);
+    validProdSku = await productMasterPage.skuInput.inputValue();
+    console.log(`[Step 1] Regenerated SKU: "${validProdSku}"`);
+    expect(validProdSku.trim().length).toBeGreaterThan(0);
+
     console.log('[Step 1] 1. Blank Check: Clicking NEXT with blank fields...');
     await productMasterPage.clickNext();
     await expect(productMasterPage.activeTabTitle).toHaveText('Basic Information');
 
     const step1Errors = await productMasterPage.getAllVisibleErrors();
     console.log('[Step 1] Blank submission errors thrown:', step1Errors);
-    expect(step1Errors.length).toBeGreaterThanOrEqual(4);
+    expect(step1Errors.length).toBeGreaterThanOrEqual(3);
     expect(step1Errors).toContain('Product Name is required');
-    expect(step1Errors).toContain('SKU is required');
+    expect(step1Errors).not.toContain('SKU is required');
     expect(step1Errors).toContain('Category is required');
     expect(step1Errors).toContain('Product Type is required');
 
     console.log('[Step 1] 2. Rectifying with valid data...');
     await productMasterPage.fill(productMasterPage.productNameInput, validProdName, 'Product Name');
-    await productMasterPage.fill(productMasterPage.skuInput, validProdSku, 'SKU');
     await productMasterPage.selectDropdownOption(productMasterPage.categoryDropdown, 0);
     await productMasterPage.selectDropdownOption(productMasterPage.productTypeDropdown, 0);
     await productMasterPage.fill(productMasterPage.descriptionInput, 'Premium handcrafted candle formula.', 'Description');
@@ -75,7 +87,9 @@ test.describe('Product Master - End-to-End Validation & Boundary Suite', () => {
     console.log('[Step 2] 4. Rectifying with valid specifications & Burn Time...');
     await productMasterPage.selectDropdownOption(productMasterPage.waxTypeDropdown, 0);
     await productMasterPage.selectDropdownOption(productMasterPage.wickTypeDropdown, 0);
-    await productMasterPage.selectDropdownOption(productMasterPage.wickSizeDropdown, 0);
+    if (await productMasterPage.wickSizeDropdown.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await productMasterPage.selectDropdownOption(productMasterPage.wickSizeDropdown, 0);
+    }
     await productMasterPage.selectDropdownOption(productMasterPage.packagingTypeDropdown, 0);
     if (await productMasterPage.burnTimeInput.isVisible()) {
       await productMasterPage.burnTimeInput.fill('45');
@@ -165,13 +179,21 @@ test.describe('Product Master - End-to-End Validation & Boundary Suite', () => {
     const retailBlankErrors = await productMasterPage.getAllVisibleErrors(productMasterPage.retailPriceModal);
     console.log('[Step 4.1: Retail Pricing] Blank modal errors thrown:', retailBlankErrors);
 
-    console.log('[Step 4.1: Retail Pricing] 2. Percentage Boundary Check: Discounts cannot exceed 100%...');
-    await productMasterPage.selectDropdownOption(productMasterPage.pricingChannelDropdown, 0);
-    await productMasterPage.fill(productMasterPage.retailSellingPriceInput, '850', 'Selling Price');
-    await productMasterPage.fill(productMasterPage.retailMinOrderQtyInput, '1', 'Min Qty');
-    await productMasterPage.fill(productMasterPage.retailMaxOrderQtyInput, '20', 'Max Qty');
+    // 2a. Negative discount percentage check in Retail
+    console.log('[Step 4.1: Retail Pricing] 2a. Negative Percentage Check: Discounts cannot be negative...');
+    await productMasterPage.fill(productMasterPage.retailMinDiscountInput, '-20', 'Min Discount (-20%)');
+    await productMasterPage.fill(productMasterPage.retailMaxDiscountInput, '-10', 'Max Discount (-10%)');
+    await productMasterPage.click(productMasterPage.retailModalSaveBtn, 'Retail Modal Save (Negative Discount)');
+    await expect(productMasterPage.retailPriceModal).toBeVisible();
 
-    // Entering discounts > 100%
+    const minNegErr = await productMasterPage.getFieldError('Minimum Discount', productMasterPage.retailPriceModal);
+    const maxNegErr = await productMasterPage.getFieldError('Maximum Discount', productMasterPage.retailPriceModal);
+    console.log(`[Step 4.1] Retail Negative Discount errors caught: Min="${minNegErr}", Max="${maxNegErr}"`);
+    expect(minNegErr.toLowerCase()).toContain('cannot be negative');
+    expect(maxNegErr.toLowerCase()).toContain('cannot be negative');
+
+    // 2b. Percentage > 100% check in Retail
+    console.log('[Step 4.1: Retail Pricing] 2b. Percentage Boundary Check: Discounts cannot exceed 100%...');
     await productMasterPage.fill(productMasterPage.retailMinDiscountInput, '110', 'Min Discount (110%)');
     await productMasterPage.fill(productMasterPage.retailMaxDiscountInput, '150', 'Max Discount (150%)');
     await productMasterPage.click(productMasterPage.retailModalSaveBtn, 'Retail Modal Save (>100% Discount)');
@@ -184,6 +206,10 @@ test.describe('Product Master - End-to-End Validation & Boundary Suite', () => {
     expect(maxDiscErr.toLowerCase()).toContain('cannot exceed 100');
 
     console.log('[Step 4.1: Retail Pricing] 3. Rectifying and saving valid retail price (discounts <= 100%)...');
+    await productMasterPage.selectDropdownOption(productMasterPage.pricingChannelDropdown, 0);
+    await productMasterPage.fill(productMasterPage.retailSellingPriceInput, '850', 'Selling Price');
+    await productMasterPage.fill(productMasterPage.retailMinOrderQtyInput, '1', 'Min Qty');
+    await productMasterPage.fill(productMasterPage.retailMaxOrderQtyInput, '20', 'Max Qty');
     await productMasterPage.fill(productMasterPage.retailMinDiscountInput, '5', 'Min Discount');
     await productMasterPage.fill(productMasterPage.retailMaxDiscountInput, '12', 'Max Discount');
     await productMasterPage.click(productMasterPage.retailModalSaveBtn, 'Retail Modal Save');

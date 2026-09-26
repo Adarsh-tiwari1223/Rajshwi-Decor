@@ -66,22 +66,74 @@ export class LoginPage extends BasePage {
       { timeout: 45000 }
     );
 
-    // 2. Click Sign In Button
+    // 2. Setup listener to catch and handle Kommuno / third-party popup tabs automatically
+    const context = this.page.context();
+    const popupListener = async (popup: Page) => {
+      try {
+        await popup.waitForLoadState('domcontentloaded').catch(() => {});
+        const pUrl = popup.url().toLowerCase();
+        if (pUrl.includes('kommuno') || pUrl.includes('dialer') || pUrl.includes('softphone')) {
+          console.log(`[LoginPage] Detected extra Kommuno tab (${pUrl}). Closing and switching back to Rajasvi Decor...`);
+          await popup.close().catch(() => {});
+          await this.page.bringToFront().catch(() => {});
+        }
+      } catch (_) {}
+    };
+    context.on('page', popupListener);
+
+    // 3. Click Sign In Button
     await this.click(this.loginSubmitBtn, 'Sign In Button');
 
-    // 3. Ensure login API returns 200 before proceeding
+    // 4. Ensure login API returns 200 before proceeding
     await loginResponsePromise;
 
-    // 4. Wait for dashboard transition (URL /dashboard or visible dashboard indicator)
+    // 5. Clean up any existing Kommuno tab and switch focus back to Rajasvi Decor tab
+    await this.switchBackToRajasviTab();
+
+    // 6. Wait for dashboard transition (URL /dashboard or visible dashboard indicator)
     await this.page.waitForURL('**/dashboard**', { timeout: 15000 }).catch(() => {});
     const dashboardIndicator = this.page.locator('span:has-text("Dashboard"), .rd-dashboard, text=WELCOME BACK, text=Welcome back').first();
     await dashboardIndicator.waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
     await this.page.waitForTimeout(500);
+    await this.switchBackToRajasviTab();
+  }
+
+  /**
+   * Switch back to the primary Rajasvi Decor application tab if a secondary tab (e.g. Kommuno dialer) is opened
+   */
+  async switchBackToRajasviTab(): Promise<void> {
+    const context = this.page.context();
+    const pages = context.pages();
+    for (const p of pages) {
+      if (p !== this.page) {
+        const pUrl = p.url().toLowerCase();
+        if (pUrl.includes('kommuno') || pUrl.includes('dialer') || pUrl.includes('softphone') || pUrl === 'about:blank') {
+          console.log(`[LoginPage] Extra tab found (${pUrl}). Closing tab and refocusing Rajasvi Decor...`);
+          await p.close().catch(() => {});
+        }
+      }
+    }
+    await this.page.bringToFront().catch(() => {});
+  }
+
+  /**
+   * Login as a specific user resolved by keyword, alias, or AppUser object.
+   * If no argument is passed, resolves user from CLI args or TARGET_USER or defaults to Admin.
+   */
+  async loginAs(userOrKeyword?: string | import('../utils/userResolver').AppUser, rememberMe = false): Promise<import('../utils/userResolver').AppUser> {
+    const { resolveUser } = await import('../utils/userResolver');
+    const user = typeof userOrKeyword === 'string'
+      ? resolveUser(userOrKeyword)
+      : (userOrKeyword || resolveUser());
+
+    await this.login(user.email, user.password, rememberMe);
+    return user;
   }
 
   /**
    * Toggle password field visibility
    */
+
   async togglePasswordVisibility(): Promise<void> {
     await this.click(this.passwordToggleBtn, 'Password Visibility Toggle');
   }

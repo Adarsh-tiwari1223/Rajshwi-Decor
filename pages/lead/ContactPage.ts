@@ -162,6 +162,14 @@ export class ContactModal {
   }
 
   /**
+   * Get the current displayed text/label of a dropdown
+   */
+  async getDropdownText(dropdown: Locator): Promise<string> {
+    const label = dropdown.locator('.p-dropdown-label');
+    return (await label.textContent())?.trim() || '';
+  }
+
+  /**
    * Fill out the entire Add/Edit Contact form
    */
   async fillForm(data: NewContactFormData): Promise<void> {
