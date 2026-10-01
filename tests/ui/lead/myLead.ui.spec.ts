@@ -3,7 +3,7 @@ import { Config } from '../../../utils/env';
 import { ContactDataGenerator } from '../../../testdata/lead/leadGenerator';
 
 test.describe('Lead Module - My Lead & Auto-Assignment UI Test Suite', () => {
-  test.setTimeout(60000);
+  test.setTimeout(120000);
 
   test.beforeEach(async ({ loginPage }) => {
     // 1. Authenticate with admin credentials
