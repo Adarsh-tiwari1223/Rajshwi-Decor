@@ -1,4 +1,5 @@
 import { test, expect } from '../../../core/fixtures/customFixtures';
+import { Config } from '../../../utils/env';
 import { CRM_USERS, generateContactPayload } from '../../../scripts/postContactsPerUser';
 
 test.describe('Rajasvi Decor - Post 5 Contacts From Each User API Suite', () => {
@@ -16,7 +17,7 @@ test.describe('Rajasvi Decor - Post 5 Contacts From Each User API Suite', () => 
         token = loginData.token;
       } else {
         const adminLogin = await request.post('https://crm-stg-api.rajasvidecor.com/api/user/login', {
-          data: { email: 'admin@rajasvidecor.com', password: 'Admin@123' }
+          data: { email: Config.adminEmail, password: Config.adminPassword }
         });
         const adminData = await adminLogin.json();
         token = adminData.token;

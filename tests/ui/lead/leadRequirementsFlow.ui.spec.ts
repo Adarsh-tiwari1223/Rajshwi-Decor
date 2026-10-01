@@ -1,10 +1,11 @@
 import { test, expect } from '../../../core/fixtures/customFixtures';
+import { Config } from '../../../utils/env';
 
 test.describe('Rajasvi Decor - Lead Details Requirements Tab & 2-Step Wizard Flow', () => {
 
   test.beforeEach(async ({ loginPage }) => {
     await loginPage.goto();
-    await loginPage.login('admin@rajasvidecor.com', 'Admin@123');
+    await loginPage.login(Config.adminEmail, Config.adminPassword);
   });
 
   test('RD_REQ_01: Verify default tab is Overview, navigate to Requirements tab, and verify table layout', async ({ myLeadPage, leadDetailsPage }) => {

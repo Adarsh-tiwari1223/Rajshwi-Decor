@@ -15,120 +15,120 @@ export const KNOWN_USERS: AppUser[] = [
   {
     id: 20,
     name: 'Aakhnsha shrivastav',
-    email: process.env.USER_AKANKSHA_EMAIL || 'aakanshashrivastava12@gmail.com',
-    password: process.env.USER_AKANKSHA_PASSWORD || '1wPKPZj44z',
-    aliases: ['akasnsha', 'akanksha', 'aakhnsha', 'akhnsha', 'aakansha', 'shrivastav', 'srivastav', 'aakanshashrivastava12', 'sales-akanksha']
+    email: process.env.USER_AKANKSHA_EMAIL || '',
+    password: process.env.USER_AKANKSHA_PASSWORD || '',
+    aliases: ['akasnsha', 'akanksha', 'aakhnsha', 'akhnsha', 'aakansha', 'shrivastav', 'srivastav', 'sales-akanksha']
   },
   {
     id: 3,
     name: 'Admin',
-    email: process.env.ADMIN_EMAIL || 'admin@rajasvidecor.com',
-    password: process.env.ADMIN_PASSWORD || 'Admin@123',
+    email: process.env.ADMIN_EMAIL || '',
+    password: process.env.ADMIN_PASSWORD || '',
     aliases: ['admin', 'administrator', 'root']
   },
   {
     id: 5,
     name: 'Priya Patel',
-    email: process.env.USER_PRIYA_EMAIL || 'priya.patel@gmail.com',
-    password: process.env.USER_PRIYA_PASSWORD || 'password123',
+    email: process.env.USER_PRIYA_EMAIL || '',
+    password: process.env.USER_PRIYA_PASSWORD || '',
     aliases: ['priya', 'priyapatel']
   },
   {
     id: 4,
     name: 'Rahul Sharma',
-    email: process.env.USER_RAHUL_EMAIL || 'rahul.sharma@gmail.com',
-    password: process.env.USER_RAHUL_PASSWORD || 'password123',
+    email: process.env.USER_RAHUL_EMAIL || '',
+    password: process.env.USER_RAHUL_PASSWORD || '',
     aliases: ['rahul', 'rahulsharma']
   },
   {
     id: 6,
     name: 'Amit Verma',
-    email: process.env.USER_AMIT_EMAIL || 'amit.verma@gmail.com',
-    password: process.env.USER_AMIT_PASSWORD || 'password123',
+    email: process.env.USER_AMIT_EMAIL || '',
+    password: process.env.USER_AMIT_PASSWORD || '',
     aliases: ['amit', 'amitverma']
   },
   {
     id: 7,
     name: 'Sneha Joshi',
-    email: process.env.USER_SNEHA_EMAIL || 'sneha.joshi@gmail.com',
-    password: process.env.USER_SNEHA_PASSWORD || 'password123',
+    email: process.env.USER_SNEHA_EMAIL || '',
+    password: process.env.USER_SNEHA_PASSWORD || '',
     aliases: ['sneha', 'snehajoshi']
   },
   {
     id: 8,
     name: 'Vikas Mehta',
-    email: process.env.USER_VIKAS_EMAIL || 'vikas.mehta@gmail.com',
-    password: process.env.USER_VIKAS_PASSWORD || 'password123',
+    email: process.env.USER_VIKAS_EMAIL || '',
+    password: process.env.USER_VIKAS_PASSWORD || '',
     aliases: ['vikas', 'vikasmehta']
   },
   {
     id: 9,
     name: 'Uday Singh',
-    email: process.env.USER_UDAY_EMAIL || 'uday12@gmail.com',
-    password: process.env.USER_UDAY_PASSWORD || '1234567',
+    email: process.env.USER_UDAY_EMAIL || '',
+    password: process.env.USER_UDAY_PASSWORD || '',
     aliases: ['uday', 'udaysingh']
   },
   {
     id: 19,
     name: 'Anjali Sharma',
-    email: 'anjali@rajasvidecor.com',
-    password: 'Anjali@220011',
+    email: process.env.USER_ANJALI_EMAIL || '',
+    password: process.env.USER_ANJALI_PASSWORD || '',
     aliases: ['anjali', 'anjalisharma']
   },
   {
     id: 18,
     name: 'Kripa Shankar',
-    email: 'Kripa@rajasvidecor.com',
-    password: 'Kripa@12100',
+    email: process.env.USER_KRIPA_EMAIL || '',
+    password: process.env.USER_KRIPA_PASSWORD || '',
     aliases: ['kripa', 'kripashankar']
   },
   {
     id: 17,
     name: 'Gaurav',
-    email: 'gaurav@rajasvidecor.com',
-    password: 'Gaurav@1210',
+    email: process.env.USER_GAURAV_EMAIL || '',
+    password: process.env.USER_GAURAV_PASSWORD || '',
     aliases: ['gaurav']
   },
   {
     id: 16,
     name: 'Kashish',
-    email: 'kashish@rajasvidecor.com',
-    password: 'Kashish@202612',
+    email: process.env.USER_KASHISH_EMAIL || '',
+    password: process.env.USER_KASHISH_PASSWORD || '',
     aliases: ['kashish']
   },
   {
     id: 15,
     name: 'Tannu',
-    email: 'tannu@rajasvidecor.com',
-    password: 'Tannu@120012',
+    email: process.env.USER_TANNU_EMAIL || '',
+    password: process.env.USER_TANNU_PASSWORD || '',
     aliases: ['tannu']
   },
   {
     id: 14,
     name: 'Vanya',
-    email: 'vanya@rajasvidecor.com',
-    password: 'Vanya@12345678',
+    email: process.env.USER_VANYA_EMAIL || '',
+    password: process.env.USER_VANYA_PASSWORD || '',
     aliases: ['vanya']
   },
   {
     id: 13,
     name: 'Aakansha',
-    email: 'aakansha@rajasvidecor.com',
-    password: 'Rajasvi@2024',
+    email: process.env.USER_AAKANSHA_CRM_EMAIL || '',
+    password: process.env.USER_AAKANSHA_CRM_PASSWORD || '',
     aliases: ['aakansha-crm', 'aakansha13']
   },
   {
     id: 12,
     name: 'Neetu',
-    email: 'neetu@rajasvidecor.com',
-    password: 'Rajasvi@1234567',
+    email: process.env.USER_NEETU_EMAIL || '',
+    password: process.env.USER_NEETU_PASSWORD || '',
     aliases: ['neetu']
   },
   {
     id: 11,
     name: 'Tanisha',
-    email: 'tanisha@rajasvidecor.com',
-    password: 'Rajasvi@2026',
+    email: process.env.USER_TANISHA_EMAIL || '',
+    password: process.env.USER_TANISHA_PASSWORD || '',
     aliases: ['tanisha']
   }
 ];

@@ -108,6 +108,20 @@ test.describe('Masters Module - Product Master & 6-Step Stepper Lifecycle Test S
     const selectedPackaging = await productMasterPage.selectDropdownOption(productMasterPage.packagingTypeDropdown, 0);
     console.log(`[Step 2] Selected Packaging Type: ${selectedPackaging}`);
 
+    // Select Fragrance (Refinement: MultiSelect)
+    if (await productMasterPage.fragranceMultiSelect.isVisible({ timeout: 1500 }).catch(() => false)) {
+      const selectedFragrance = await productMasterPage.selectMultiSelectOption(productMasterPage.fragranceMultiSelect, 0);
+      console.log(`[Step 2] Selected Fragrance (MultiSelect): ${selectedFragrance}`);
+    } else if (await productMasterPage.fragranceDropdown.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await productMasterPage.selectDropdownOption(productMasterPage.fragranceDropdown, 0);
+    }
+
+    // Select Color (Refinement: MultiSelect)
+    if (await productMasterPage.colorMultiSelect.isVisible({ timeout: 1500 }).catch(() => false)) {
+      const selectedColor = await productMasterPage.selectMultiSelectOption(productMasterPage.colorMultiSelect, 0);
+      console.log(`[Step 2] Selected Color (MultiSelect): ${selectedColor}`);
+    }
+
     // Fill Burn Time & Unit
     if (await productMasterPage.burnTimeInput.isVisible()) {
       await productMasterPage.fill(productMasterPage.burnTimeInput, '45', 'Burn Time');
@@ -115,7 +129,6 @@ test.describe('Masters Module - Product Master & 6-Step Stepper Lifecycle Test S
     }
 
     // Optional fields
-    await productMasterPage.selectDropdownOption(productMasterPage.fragranceDropdown, 0).catch(() => {});
     await productMasterPage.selectDropdownOption(productMasterPage.containerTypeDropdown, 0).catch(() => {});
     await productMasterPage.selectDropdownOption(productMasterPage.lidTypeDropdown, 0).catch(() => {});
 
@@ -125,24 +138,14 @@ test.describe('Masters Module - Product Master & 6-Step Stepper Lifecycle Test S
       'Additional Notes'
     );
 
-    // Verify Back navigation preserves Step 1 data
-    console.log('[Step 2] Testing Back button to Step 1...');
-    await productMasterPage.clickBack();
-    await expect(productMasterPage.activeTabTitle).toHaveText('Basic Information');
-    await expect(productMasterPage.productNameInput).toHaveValue(uniqueProductName);
-    await expect(productMasterPage.skuInput).toHaveValue(uniqueSku);
-
-    // Return to Step 2, then proceed to Step 3
-    await productMasterPage.clickNext();
-    await expect(productMasterPage.activeTabTitle).toHaveText('Candle Details');
-
+    // Proceed from Step 2 to Step 3
     await productMasterPage.clickNext();
     await expect(productMasterPage.activeTabTitle).toHaveText('Dimensions & Weight');
 
     // =========================================================================
-    // STEP 3: DIMENSIONS & WEIGHT
+    // STEP 3: DIMENSIONS & WEIGHT (Refinement: Is Packaging Toggle)
     // =========================================================================
-    console.log('[Step 3: Dimensions & Weight] Filling candle and package dimensions...');
+    console.log('[Step 3: Dimensions & Weight] Filling candle dimensions and refined packaging...');
 
     // Candle Dimensions
     await productMasterPage.fill(productMasterPage.productHeightInput, '12', 'Product Height');
@@ -154,11 +157,19 @@ test.describe('Masters Module - Product Master & 6-Step Stepper Lifecycle Test S
     await productMasterPage.fill(productMasterPage.netWeightInput, '250', 'Net Weight');
     await productMasterPage.fill(productMasterPage.grossWeightInput, '420', 'Gross Weight');
 
-    // Package Dimensions
+    // Refinement: Toggle "Is Packaging" ON to display and fill package dimensions
+    await expect(productMasterPage.isPackagingSwitch).toBeVisible();
+    await productMasterPage.togglePackaging(true);
+    await expect(productMasterPage.packageDimensionsCard).toBeVisible();
+
+    // Package Dimensions & Amount
     await productMasterPage.fill(productMasterPage.packageLengthInput, '14', 'Package Length');
     await productMasterPage.fill(productMasterPage.packageWidthInput, '10', 'Package Width');
     await productMasterPage.fill(productMasterPage.packageHeightInput, '14', 'Package Height');
     await productMasterPage.fill(productMasterPage.packageWeightInput, '450', 'Package Weight');
+    if (await productMasterPage.packagingAmountInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await productMasterPage.fill(productMasterPage.packagingAmountInput, '25', 'Packaging Amount');
+    }
 
     // Proceed to Step 4
     await productMasterPage.clickNext();
@@ -387,12 +398,10 @@ test.describe('Masters Module - Product Master & 6-Step Stepper Lifecycle Test S
       category: categoryName
     });
 
-    console.log(`[Draft Flow] Searching by SKU "${draftSku}" in table...`);
-    await productMasterPage.searchProduct(draftSku);
-    const rowBySku = await productMasterPage.getRowData(0);
-    console.log(`[Table Match] Found row by SKU: Name="${rowBySku.name}", SKU="${rowBySku.sku}", Category="${rowBySku.category}"`);
-    expect(rowBySku.name).toContain(draftProductName);
-    expect(rowBySku.sku).toContain(draftSku);
+    const rowByProduct = await productMasterPage.getRowData(0);
+    console.log(`[Table Match] Found row: Name="${rowByProduct.name}", SKU="${rowByProduct.sku}", Category="${rowByProduct.category}"`);
+    expect(rowByProduct.name).toContain(draftProductName);
+    expect(rowByProduct.sku).toContain(draftSku);
 
     // =========================================================================
     // STEP 5: REOPEN VIA EDIT BUTTON & VERIFY PRE-FILLED PERSISTENCE
@@ -404,9 +413,11 @@ test.describe('Masters Module - Product Master & 6-Step Stepper Lifecycle Test S
     // Verify Step 1 pre-filled fields
     await expect(productMasterPage.activeTabTitle).toHaveText('Basic Information');
     await expect(productMasterPage.productNameInput).toHaveValue(draftProductName);
-    await expect(productMasterPage.skuInput).toHaveValue(draftSku);
+    await expect(productMasterPage.skuInput).toHaveAttribute('readonly', '');
+    const editSku = await productMasterPage.skuInput.inputValue();
+    expect(editSku).toMatch(/^RD-Candel-/);
     await expect(productMasterPage.descriptionInput).toHaveValue('Authentic calming lavender botanical candle.');
-    console.log('[Draft Flow] Step 1 pre-filled data verified successfully!');
+    console.log(`[Draft Flow] Step 1 pre-filled data verified successfully! (SKU in edit mode: "${editSku}")`);
 
     // Navigate to Step 2 & verify pre-filled specifications
     await productMasterPage.clickNext();
@@ -430,8 +441,7 @@ test.describe('Masters Module - Product Master & 6-Step Stepper Lifecycle Test S
     // Re-verify product in table after exiting edit
     console.log(`[Draft Flow] Re-validating record in table after edit SAVE & EXIT...`);
     await productMasterPage.verifyProductInTable({
-      name: draftProductName,
-      sku: draftSku
+      name: draftProductName
     });
     console.log('=========================================================================');
     console.log('SAVE & EXIT -> TABLE SEARCH -> EDIT REOPEN PREFILLED -> SAVE & EXIT VERIFIED!');

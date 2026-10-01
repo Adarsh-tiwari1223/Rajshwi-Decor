@@ -6,8 +6,9 @@ test.describe('Lead Module - Lead Details (leadDetails) UI Test Suite', () => {
 
   test.beforeEach(async ({ loginPage, myLeadPage }) => {
     // 1. Authenticate with Priya Patel credentials
+    const priya = Config.users.find(u => u.name === 'Priya Patel') || Config.users[0];
     await loginPage.goto();
-    await loginPage.login('priya.patel@gmail.com', 'password123');
+    await loginPage.login(priya.email, priya.password);
 
     // 2. Navigate to /mylead
     await myLeadPage.goto();

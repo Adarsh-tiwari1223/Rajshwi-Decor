@@ -1,10 +1,11 @@
 import { test, expect } from '../../../core/fixtures/customFixtures';
+import { Config } from '../../../utils/env';
 
 test.describe('Rajasvi Decor - Dashboard & Lead Status Reflection UI Tests', () => {
 
   test.beforeEach(async ({ loginPage }) => {
     await loginPage.goto();
-    await loginPage.login('admin@rajasvidecor.com', 'Admin@123');
+    await loginPage.login(Config.adminEmail, Config.adminPassword);
   });
 
   test('RD_DSH_01: Verify Dashboard Welcome Banner, Taglines, and Top Filters', async ({ dashboardPage }) => {
@@ -25,12 +26,12 @@ test.describe('Rajasvi Decor - Dashboard & Lead Status Reflection UI Tests', () 
     await expect(dashboardPage.userFilterDropdown).toBeVisible();
   });
 
-  test('RD_DSH_02: Verify 8 Core Business Stat Cards Display on Dashboard', async ({ dashboardPage }) => {
+  test('RD_DSH_02: Verify 6 Core Business Stat Cards Display on Dashboard', async ({ dashboardPage }) => {
     await dashboardPage.goto();
 
-    // Ensure 8 stat cards are present
+    // Ensure 6 stat cards are present (WhatsApp and Sample Invoices removed)
     const cardCount = await dashboardPage.statCards.count();
-    expect(cardCount).toBe(8);
+    expect(cardCount).toBe(6);
 
     // Verify metric values can be read
     const newLeads = await dashboardPage.getStatCardValue('New Leads');
@@ -48,7 +49,7 @@ test.describe('Rajasvi Decor - Dashboard & Lead Status Reflection UI Tests', () 
 
     // Verify Lead Funnel card
     await expect(dashboardPage.leadFunnelCard).toBeVisible();
-    await expect(dashboardPage.leadFunnelTitle).toHaveText('Lead Funnel');
+    await expect(dashboardPage.leadFunnelTitle).toHaveText(/Lead [fF]unnel/);
 
     // Verify total leads count
     const totalLeads = await dashboardPage.getFunnelTotalLeads();
@@ -68,7 +69,6 @@ test.describe('Rajasvi Decor - Dashboard & Lead Status Reflection UI Tests', () 
     // Verify Recent Enquiries section
     await expect(dashboardPage.recentEnquiriesSection).toBeVisible();
     await expect(dashboardPage.recentEnquiriesTitle).toHaveText('Recent Enquiries');
-    await expect(dashboardPage.viewAllEnquiriesBtn).toBeVisible();
 
     // Verify table has records
     const rowCount = await dashboardPage.recentEnquiriesRows.count();

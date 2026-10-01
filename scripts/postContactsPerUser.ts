@@ -16,43 +16,43 @@ export interface UserCreds {
 export const CRM_USERS: UserCreds[] = [
   {
     displayName: 'Admin',
-    email: process.env.ADMIN_EMAIL || 'admin@rajasvidecor.com',
-    password: process.env.ADMIN_PASSWORD || 'Admin@123'
+    email: process.env.ADMIN_EMAIL || '',
+    password: process.env.ADMIN_PASSWORD || ''
   },
   {
     displayName: 'Rahul Sharma',
-    email: process.env.USER_RAHUL_EMAIL || 'rahul.sharma@gmail.com',
-    password: process.env.USER_RAHUL_PASSWORD || 'password123'
+    email: process.env.USER_RAHUL_EMAIL || '',
+    password: process.env.USER_RAHUL_PASSWORD || ''
   },
   {
     displayName: 'Priya Patel',
-    email: process.env.USER_PRIYA_EMAIL || 'priya.patel@gmail.com',
-    password: process.env.USER_PRIYA_PASSWORD || 'password123'
+    email: process.env.USER_PRIYA_EMAIL || '',
+    password: process.env.USER_PRIYA_PASSWORD || ''
   },
   {
     displayName: 'Amit Verma',
-    email: process.env.USER_AMIT_EMAIL || 'amit.verma@gmail.com',
-    password: process.env.USER_AMIT_PASSWORD || 'password123'
+    email: process.env.USER_AMIT_EMAIL || '',
+    password: process.env.USER_AMIT_PASSWORD || ''
   },
   {
     displayName: 'Sneha Joshi',
-    email: process.env.USER_SNEHA_EMAIL || 'sneha.joshi@gmail.com',
-    password: process.env.USER_SNEHA_PASSWORD || 'password123'
+    email: process.env.USER_SNEHA_EMAIL || '',
+    password: process.env.USER_SNEHA_PASSWORD || ''
   },
   {
     displayName: 'Vikas Mehta',
-    email: process.env.USER_VIKAS_EMAIL || 'vikas.mehta@gmail.com',
-    password: process.env.USER_VIKAS_PASSWORD || 'password123'
+    email: process.env.USER_VIKAS_EMAIL || '',
+    password: process.env.USER_VIKAS_PASSWORD || ''
   },
   {
     displayName: 'Uday',
-    email: process.env.USER_UDAY_EMAIL || 'uday12@gmail.com',
-    password: process.env.USER_UDAY_PASSWORD || '1234567'
+    email: process.env.USER_UDAY_EMAIL || '',
+    password: process.env.USER_UDAY_PASSWORD || ''
   },
   {
     displayName: 'Aakhnsha shrivastav',
-    email: process.env.USER_AKANKSHA_EMAIL || 'aakanshashrivastava12@gmail.com',
-    password: process.env.USER_AKANKSHA_PASSWORD || '1wPKPZj44z'
+    email: process.env.USER_AKANKSHA_EMAIL || '',
+    password: process.env.USER_AKANKSHA_PASSWORD || ''
   }
 ];
 
@@ -103,8 +103,8 @@ async function postContactsForUser(reqContext: any, user: UserCreds, count = 5) 
     // Fallback: Login as admin
     const adminLoginRes = await reqContext.post(`${API_BASE_URL}/api/user/login`, {
       data: {
-        email: process.env.ADMIN_EMAIL || 'admin@rajasvidecor.com',
-        password: process.env.ADMIN_PASSWORD || 'Admin@123'
+        email: process.env.ADMIN_EMAIL || '',
+        password: process.env.ADMIN_PASSWORD || ''
       }
     });
     if (adminLoginRes.ok()) {

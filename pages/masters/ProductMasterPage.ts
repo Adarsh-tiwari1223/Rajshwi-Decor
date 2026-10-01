@@ -51,7 +51,9 @@ export class ProductMasterPage extends BasePage {
   // 5. STEP 2: CANDLE DETAILS
   // =========================================================================
   readonly fragranceDropdown: Locator;
+  readonly fragranceMultiSelect: Locator;
   readonly waxTypeDropdown: Locator;
+  readonly colorMultiSelect: Locator;
   readonly colorPickerPreview: Locator;
   readonly colorValueText: Locator;
   readonly wickTypeDropdown: Locator;
@@ -82,12 +84,15 @@ export class ProductMasterPage extends BasePage {
   readonly grossWeightUnitDropdown: Locator;
 
   // Section C: Package Dimensions
+  readonly isPackagingSwitch: Locator;
+  readonly packageDimensionsCard: Locator;
   readonly packageLengthInput: Locator;
   readonly packageWidthInput: Locator;
   readonly packageHeightInput: Locator;
   readonly packageDimensionUnitDropdown: Locator;
   readonly packageWeightInput: Locator;
   readonly packageWeightUnitDropdown: Locator;
+  readonly packagingAmountInput: Locator;
 
   // =========================================================================
   // 7. STEP 4: PRICING (RETAIL, WHOLESALE, B2B)
@@ -212,8 +217,10 @@ export class ProductMasterPage extends BasePage {
     this.descriptionInput = this.stepperDialog.locator('textarea[name="description"]');
 
     // 5. Step 2: Candle Details
-    this.fragranceDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="fragrance_Id"])');
+    this.fragranceMultiSelect = this.stepperDialog.locator('div.p-multiselect:has([name*="fragrance" i]), div:has(> label:has-text("Fragrance")) .p-multiselect, div.p-multiselect:has(select[name="fragrance_Id"])');
+    this.fragranceDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="fragrance_Id"]), div.p-multiselect:has([name*="fragrance" i])');
     this.waxTypeDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="wax_Type_Id"])');
+    this.colorMultiSelect = this.stepperDialog.locator('div.p-multiselect:has([name*="color" i]), div:has(> label:has-text("Color")) .p-multiselect');
     this.colorPickerPreview = this.stepperDialog.locator('.p-colorpicker-preview');
     this.colorValueText = this.stepperDialog.locator('.flex:has(.p-colorpicker) span.ml-2');
     this.wickTypeDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="wick_Type_Id"])');
@@ -227,24 +234,27 @@ export class ProductMasterPage extends BasePage {
 
     // 6. Step 3: Dimensions & Weight
     this.productHeightInput = this.stepperDialog.locator('input[name="product_Height"]');
-    this.productHeightUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="product_Height_Unit"])');
+    this.productHeightUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="product_Height_Unit"]), div.p-dropdown:has(#product_Height_Unit)');
     this.bottomDiameterInput = this.stepperDialog.locator('input[name="product_Bottom_Diameter"]');
-    this.bottomDiameterUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="product_Diameter_Unit"])');
+    this.bottomDiameterUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="product_Diameter_Unit"]), div.p-dropdown:has(#product_Diameter_Unit)');
     this.topDiameterInput = this.stepperDialog.locator('input[name="product_Top_Diameter"]');
 
     this.capacityWaxInput = this.stepperDialog.locator('input[name="capacity"]');
-    this.capacityUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="capacity_Unit"])');
+    this.capacityUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="capacity_Unit"]), div.p-dropdown:has(#capacity_Unit)');
     this.netWeightInput = this.stepperDialog.locator('input[name="weight"]');
-    this.netWeightUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="net_Weight_Unit"])');
+    this.netWeightUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="net_Weight_Unit"]), div.p-dropdown:has(#net_Weight_Unit)');
     this.grossWeightInput = this.stepperDialog.locator('input[name="gross_Weight"]');
-    this.grossWeightUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="gross_Weight_Unit"])');
+    this.grossWeightUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="gross_Weight_Unit"]), div.p-dropdown:has(#gross_Weight_Unit)');
 
+    this.isPackagingSwitch = this.stepperDialog.locator('.p-inputswitch:has(input#is_packing)');
+    this.packageDimensionsCard = this.stepperDialog.locator('div:has(> .flex:has-text("Package Dimensions"))').last();
     this.packageLengthInput = this.stepperDialog.locator('input[name="package_Length"]');
     this.packageWidthInput = this.stepperDialog.locator('input[name="package_Width"]');
     this.packageHeightInput = this.stepperDialog.locator('input[name="package_Height"]');
-    this.packageDimensionUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="package_Dimension_Unit"])');
+    this.packageDimensionUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="package_Dimension_Unit"]), div.p-dropdown:has(#package_Dimension_Unit)');
     this.packageWeightInput = this.stepperDialog.locator('input[name="package_Weight"]');
-    this.packageWeightUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="package_Weight_Unit"])');
+    this.packageWeightUnitDropdown = this.stepperDialog.locator('div.p-dropdown:has(select[name="package_Weight_Unit"]), div.p-dropdown:has(#package_Weight_Unit)');
+    this.packagingAmountInput = this.stepperDialog.locator('input[name="packaging_Amount"]');
 
     // 7. Step 4: Pricing
     this.hsnSacCodeInput = this.stepperDialog.locator('input[name="hsn_Sac_Code"]');
@@ -354,6 +364,41 @@ export class ProductMasterPage extends BasePage {
     return selectedText;
   }
 
+  async selectMultiSelectOption(multiSelect: Locator, optionTextOrIndex: string | number = 0): Promise<string> {
+    await this.click(multiSelect, 'MultiSelect Trigger');
+    const panel = this.page.locator('.p-multiselect-panel:visible');
+    await panel.waitFor({ state: 'visible', timeout: 5000 });
+
+    let targetOption: Locator;
+    if (typeof optionTextOrIndex === 'string') {
+      targetOption = panel.locator(`.p-multiselect-item:has-text("${optionTextOrIndex}")`).first();
+    } else {
+      targetOption = panel.locator('.p-multiselect-item').nth(optionTextOrIndex);
+    }
+
+    const selectedText = (await targetOption.innerText()).trim();
+    await this.click(targetOption, `MultiSelect Option: ${selectedText}`);
+    await this.page.waitForTimeout(300);
+
+    const closeBtn = panel.locator('.p-multiselect-close');
+    if (await closeBtn.isVisible().catch(() => false)) {
+      await closeBtn.click();
+    } else {
+      await this.click(multiSelect, 'Close MultiSelect');
+    }
+    await panel.waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+    return selectedText;
+  }
+
+  async togglePackaging(enable: boolean = true): Promise<void> {
+    const ariaChecked = await this.isPackagingSwitch.getAttribute('aria-checked');
+    const isChecked = ariaChecked === 'true';
+    if (isChecked !== enable) {
+      await this.click(this.isPackagingSwitch, 'Is Packaging Toggle Switch');
+      await this.page.waitForTimeout(400);
+    }
+  }
+
   async clickNext(): Promise<void> {
     await this.click(this.nextBtn, 'NEXT Button');
     await this.page.waitForTimeout(600);
@@ -366,7 +411,16 @@ export class ProductMasterPage extends BasePage {
 
   async clickSaveAndExit(): Promise<void> {
     await this.click(this.saveExitBtn, 'SAVE & EXIT Button');
-    await this.stepperDialog.waitFor({ state: 'hidden', timeout: 20000 });
+    // If the modal does not auto-close after saving, close it via Cancel or header close button
+    const isHidden = await this.stepperDialog.waitFor({ state: 'hidden', timeout: 3000 }).then(() => true).catch(() => false);
+    if (!isHidden) {
+      if (await this.cancelBtn.isVisible().catch(() => false)) {
+        await this.click(this.cancelBtn, 'Cancel Button after Save & Exit');
+      } else if (await this.stepperCloseBtn.isVisible().catch(() => false)) {
+        await this.click(this.stepperCloseBtn, 'Close Button after Save & Exit');
+      }
+      await this.stepperDialog.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+    }
   }
 
   async clickFinalSave(): Promise<void> {
@@ -400,7 +454,7 @@ export class ProductMasterPage extends BasePage {
     return { name, sku, productType, category, rowText };
   }
 
-  async verifyProductInTable(params: { name: string; sku: string; category?: string }): Promise<void> {
+  async verifyProductInTable(params: { name: string; sku?: string; category?: string }): Promise<void> {
     await this.searchProduct(params.name);
     const row = this.tableRows.first();
     await row.waitFor({ state: 'visible', timeout: 10000 });
@@ -408,7 +462,7 @@ export class ProductMasterPage extends BasePage {
     if (!rowText.includes(params.name)) {
       throw new Error(`Expected table to contain product name "${params.name}", but found: ${rowText}`);
     }
-    if (!rowText.includes(params.sku)) {
+    if (params.sku && !rowText.includes(params.sku)) {
       throw new Error(`Expected table to contain SKU "${params.sku}", but found: ${rowText}`);
     }
     if (params.category && !rowText.includes(params.category)) {

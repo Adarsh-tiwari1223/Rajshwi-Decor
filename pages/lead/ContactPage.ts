@@ -251,6 +251,8 @@ export class BulkUploadModal {
   readonly modalTitle: Locator;
   readonly closeIconBtn: Locator;
   readonly onBehalfUserDropdown: Locator;
+  readonly assignedToDropdown: Locator;
+  readonly sourceDropdown: Locator;
   readonly chooseFileBtn: Locator;
   readonly fileInput: Locator;
   readonly saveBtn: Locator;
@@ -261,6 +263,8 @@ export class BulkUploadModal {
     this.modalTitle = page.locator('.p-dialog-title:has-text("Bulk Upload")');
     this.closeIconBtn = page.locator('.p-dialog:has-text("Bulk Upload") .p-dialog-header-close');
     this.onBehalfUserDropdown = page.locator('.p-dialog:has-text("Bulk Upload") div.p-dropdown:has(input#onBehalfUserID)');
+    this.assignedToDropdown = page.locator('.p-dialog:has-text("Bulk Upload") div.p-dropdown:has(input#assigned_To)');
+    this.sourceDropdown = page.locator('.p-dialog:has-text("Bulk Upload") div.p-dropdown:has(input#source_ID)');
     this.chooseFileBtn = page.locator('.p-dialog:has-text("Bulk Upload") .p-fileupload-choose');
     this.fileInput = page.locator('.p-dialog:has-text("Bulk Upload") input[type="file"]');
     this.saveBtn = page.locator('.p-dialog:has-text("Bulk Upload") button[aria-label="SAVE"]');
@@ -275,8 +279,44 @@ export class BulkUploadModal {
     await this.modalDialog.waitFor({ state: 'hidden', timeout });
   }
 
-  async selectOnBehalfUser(userName: string): Promise<void> {
+  async selectOnBehalfUser(userName?: string): Promise<string> {
     await this.onBehalfUserDropdown.click();
+    const panel = this.page.locator('.p-dropdown-panel:visible');
+    await panel.waitFor({ state: 'visible', timeout: 5000 });
+
+    let chosenUser = userName || '';
+    if (userName) {
+      const filterInput = panel.locator('input.p-dropdown-filter');
+      if (await filterInput.isVisible().catch(() => false)) {
+        await filterInput.fill(userName);
+        await this.page.waitForTimeout(300);
+      }
+
+      let option = panel.locator('.p-dropdown-item').filter({ hasText: new RegExp(`^\\s*${userName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'i') }).first();
+      if (!(await option.isVisible().catch(() => false))) {
+        option = panel.locator('.p-dropdown-item').filter({ hasText: userName }).first();
+      }
+      await option.waitFor({ state: 'visible', timeout: 5000 });
+      await option.click();
+    } else {
+      // Pick first valid user from the dropdown
+      const items = panel.locator('.p-dropdown-item:not(.p-disabled)');
+      const count = await items.count();
+      for (let i = 0; i < count; i++) {
+        const text = (await items.nth(i).innerText()).trim();
+        if (text && text.toLowerCase() !== 'select') {
+          chosenUser = text;
+          await items.nth(i).click();
+          break;
+        }
+      }
+    }
+    await panel.waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+    return chosenUser;
+  }
+
+  async selectAssignedTo(userName: string): Promise<void> {
+    await this.assignedToDropdown.click();
     const panel = this.page.locator('.p-dropdown-panel:visible');
     await panel.waitFor({ state: 'visible', timeout: 5000 });
 
@@ -292,16 +332,32 @@ export class BulkUploadModal {
     }
     await option.waitFor({ state: 'visible', timeout: 5000 });
     await option.click();
-    await this.page.waitForTimeout(300);
+    await panel.waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
   }
 
-  async getAvailableOnBehalfUsers(): Promise<string[]> {
-    await this.onBehalfUserDropdown.click();
+  async selectSource(sourceName = 'Website'): Promise<string> {
+    await this.sourceDropdown.click();
     const panel = this.page.locator('.p-dropdown-panel:visible');
     await panel.waitFor({ state: 'visible', timeout: 5000 });
-    const items = await panel.locator('.p-dropdown-item').allInnerTexts();
-    await this.page.keyboard.press('Escape');
-    return items.map(i => i.trim()).filter(i => i.length > 0 && i !== 'Select');
+
+    let option = panel.locator('.p-dropdown-item').filter({ hasText: new RegExp(`^\\s*${sourceName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'i') }).first();
+    let chosenText = sourceName;
+    if (!(await option.isVisible().catch(() => false))) {
+      const items = panel.locator('.p-dropdown-item:not(.p-disabled)');
+      const count = await items.count();
+      for (let i = 0; i < count; i++) {
+        const t = (await items.nth(i).innerText()).trim();
+        if (t && !t.toLowerCase().includes('select')) {
+          chosenText = t;
+          option = items.nth(i);
+          break;
+        }
+      }
+    }
+    await option.waitFor({ state: 'visible', timeout: 5000 });
+    await option.click();
+    await panel.waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+    return chosenText;
   }
 
   async uploadFile(absoluteFilePath: string): Promise<void> {

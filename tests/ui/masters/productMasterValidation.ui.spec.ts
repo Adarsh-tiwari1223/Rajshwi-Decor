@@ -87,8 +87,13 @@ test.describe('Product Master - End-to-End Validation & Boundary Suite', () => {
     console.log('[Step 2] 4. Rectifying with valid specifications & Burn Time...');
     await productMasterPage.selectDropdownOption(productMasterPage.waxTypeDropdown, 0);
     await productMasterPage.selectDropdownOption(productMasterPage.wickTypeDropdown, 0);
-    if (await productMasterPage.wickSizeDropdown.isVisible({ timeout: 1000 }).catch(() => false)) {
-      await productMasterPage.selectDropdownOption(productMasterPage.wickSizeDropdown, 0);
+    // Select Fragrance (MultiSelect)
+    if (await productMasterPage.fragranceMultiSelect.isVisible({ timeout: 1500 }).catch(() => false)) {
+      await productMasterPage.selectMultiSelectOption(productMasterPage.fragranceMultiSelect, 0);
+    }
+    // Select Color (MultiSelect)
+    if (await productMasterPage.colorMultiSelect.isVisible({ timeout: 1500 }).catch(() => false)) {
+      await productMasterPage.selectMultiSelectOption(productMasterPage.colorMultiSelect, 0);
     }
     await productMasterPage.selectDropdownOption(productMasterPage.packagingTypeDropdown, 0);
     if (await productMasterPage.burnTimeInput.isVisible()) {
@@ -101,13 +106,18 @@ test.describe('Product Master - End-to-End Validation & Boundary Suite', () => {
     await expect(productMasterPage.activeTabTitle).toHaveText('Dimensions & Weight');
 
     // =========================================================================
-    // STEP 3: DIMENSIONS & WEIGHT (VALIDATING ALL 10 NUMERIC FIELDS)
+    // STEP 3: DIMENSIONS & WEIGHT (VALIDATING NUMERIC FIELDS & PACKAGING TOGGLE)
     // =========================================================================
     console.log('[Step 3] 1. Blank Check: Clicking NEXT with blank dimensions...');
     await productMasterPage.clickNext();
     await expect(productMasterPage.activeTabTitle).toHaveText('Dimensions & Weight');
 
-    // Define all 10 numeric inputs in Step 3
+    // Enable "Is Packaging" toggle to reveal package dimensions
+    await expect(productMasterPage.isPackagingSwitch).toBeVisible();
+    await productMasterPage.togglePackaging(true);
+    await expect(productMasterPage.packageDimensionsCard).toBeVisible();
+
+    // Define all numeric inputs in Step 3
     const allDimensionFields = [
       { locator: productMasterPage.productHeightInput, name: 'Product Height' },
       { locator: productMasterPage.bottomDiameterInput, name: 'Bottom Diameter' },
@@ -144,7 +154,7 @@ test.describe('Product Master - End-to-End Validation & Boundary Suite', () => {
       expect(capacityErr.toLowerCase()).toContain('capacity must be a number');
     }
 
-    console.log('[Step 3] 4. Rectifying all 10 dimension fields with valid positive numbers...');
+    console.log('[Step 3] 4. Rectifying all dimension fields with valid positive numbers...');
     await productMasterPage.fill(productMasterPage.productHeightInput, '14', 'Product Height');
     await productMasterPage.fill(productMasterPage.bottomDiameterInput, '8', 'Bottom Diameter');
     await productMasterPage.fill(productMasterPage.topDiameterInput, '8', 'Top Diameter');
@@ -156,6 +166,9 @@ test.describe('Product Master - End-to-End Validation & Boundary Suite', () => {
     await productMasterPage.fill(productMasterPage.packageWidthInput, '11', 'Package Width');
     await productMasterPage.fill(productMasterPage.packageHeightInput, '16', 'Package Height');
     await productMasterPage.fill(productMasterPage.packageWeightInput, '520', 'Package Weight');
+    if (await productMasterPage.packagingAmountInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await productMasterPage.fill(productMasterPage.packagingAmountInput, '25', 'Packaging Amount');
+    }
 
     await productMasterPage.clickNext();
     await expect(productMasterPage.activeTabTitle).toHaveText('Pricing');

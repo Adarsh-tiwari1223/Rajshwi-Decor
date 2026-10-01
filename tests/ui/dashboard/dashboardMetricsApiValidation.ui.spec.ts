@@ -1,4 +1,5 @@
 import { test, expect } from '../../../core/fixtures/customFixtures';
+import { Config } from '../../../utils/env';
 
 export interface DashboardStatsApiResponse {
   newLeads: number;
@@ -50,7 +51,7 @@ test.describe('Rajasvi Decor - Comprehensive Dashboard Validation (API vs UI)', 
 
     // 2. Login as Admin
     await loginPage.goto();
-    await loginPage.login('admin@rajasvidecor.com', 'Admin@123');
+    await loginPage.login(Config.adminEmail, Config.adminPassword);
 
     // 3. Ensure Dashboard is loaded
     await dashboardPage.goto();
@@ -68,10 +69,8 @@ test.describe('Rajasvi Decor - Comprehensive Dashboard Validation (API vs UI)', 
     const cardMapping = [
       { name: 'New Leads', apiValue: statsApi!.newLeads },
       { name: 'Calls Made', apiValue: statsApi!.callsMade },
-      { name: 'WhatsApp', apiValue: statsApi!.whatsApp },
       { name: 'Follow-ups', apiValue: statsApi!.followUps },
       { name: 'Requirements', apiValue: statsApi!.requirements },
-      { name: 'Sample Invoices', apiValue: statsApi!.sampleInvoices },
       { name: 'Sample Sales', apiValue: statsApi!.sampleSales },
       { name: 'Converted Sales', apiValue: statsApi!.convertedSales }
     ];
@@ -82,9 +81,8 @@ test.describe('Rajasvi Decor - Comprehensive Dashboard Validation (API vs UI)', 
       expect(uiVal, `Stat card "${card.name}" UI value must match API payload`).toBe(card.apiValue);
     }
 
-    // Unimplemented telephony / WhatsApp rule
+    // Unimplemented telephony rule
     expect(statsApi!.callsMade, 'Calls Made must be 0').toBe(0);
-    expect(statsApi!.whatsApp, 'WhatsApp must be 0').toBe(0);
 
     // Follow-ups formula rule: Follow-ups = Follow-up Pending + In Follow up
     const pending = funnelApi!.find(f => f.stage === 'Follow-up Pending')?.count || 0;

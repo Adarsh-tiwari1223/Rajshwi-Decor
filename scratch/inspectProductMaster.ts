@@ -12,7 +12,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
   const baseUrl = process.env.BASE_URL || 'https://crm-stg.rajasvidecor.com';
   await page.goto(baseUrl + '/login');
   await page.fill('input[type="email"], input[name="email"]', process.env.ADMIN_EMAIL || 'admin@rajasvidecor.com');
-  await page.fill('input[type="password"], input[name="password"]', process.env.ADMIN_PASSWORD || 'Admin@123');
+  await page.fill('input[type="password"], input[name="password"]', process.env.ADMIN_PASSWORD || '');
   await page.click('button:has-text("Sign In"), button[type="submit"]');
   await page.waitForURL('**/dashboard', { timeout: 25000 });
 

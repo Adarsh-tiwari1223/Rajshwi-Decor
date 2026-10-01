@@ -1,12 +1,14 @@
 import { test, expect } from '../../../core/fixtures/customFixtures';
+import { Config } from '../../../utils/env';
 
 test.describe('Rajasvi Decor - Lead Details Sequential Flow (Overview -> Requirements -> Products -> Customization -> Samples -> Address -> Invoice)', () => {
   test.setTimeout(180000);
 
   test.beforeEach(async ({ loginPage }) => {
     // Authenticate with Priya Patel credentials and synchronize with Dashboard load
+    const priya = Config.users.find(u => u.name === 'Priya Patel') || Config.users[0];
     await loginPage.goto();
-    await loginPage.login('priya.patel@gmail.com', 'password123');
+    await loginPage.login(priya.email, priya.password);
   });
 
   test('RD_LIFECYCLE_01: Verify all 7 tabs and perform actions in exact sequential order', async ({ myLeadPage, leadDetailsPage }) => {

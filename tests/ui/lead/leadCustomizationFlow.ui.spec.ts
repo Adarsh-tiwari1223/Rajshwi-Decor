@@ -1,12 +1,14 @@
 import { test, expect } from '../../../core/fixtures/customFixtures';
+import { Config } from '../../../utils/env';
 
 test.describe('Rajasvi Decor - Lead Details Tab 3: Customization Flow (Priya Patel)', () => {
   test.setTimeout(60000);
 
   test.beforeEach(async ({ loginPage }) => {
     // 1. Authenticate with Priya Patel credentials and synchronize with Dashboard load
+    const priya = Config.users.find(u => u.name === 'Priya Patel') || Config.users[0];
     await loginPage.goto();
-    await loginPage.login('priya.patel@gmail.com', 'password123');
+    await loginPage.login(priya.email, priya.password);
   });
 
   const openCustomizationTab = async (myLeadPage: any, leadDetailsPage: any) => {

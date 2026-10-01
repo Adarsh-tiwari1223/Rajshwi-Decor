@@ -2,8 +2,8 @@ import { test, expect } from '../../../core/fixtures/customFixtures';
 
 test.describe('Rajasvi Decor - User Lead Status Update & Follow-up Calculation Reflection', () => {
 
-  const USER_EMAIL = process.env.USER_RAHUL_EMAIL || 'rahul.sharma@gmail.com';
-  const USER_PASSWORD = process.env.USER_RAHUL_PASSWORD || 'password123';
+  const USER_EMAIL = process.env.USER_RAHUL_EMAIL || '';
+  const USER_PASSWORD = process.env.USER_RAHUL_PASSWORD || '';
 
   test.beforeEach(async ({ loginPage }) => {
     // 1. Login via regular user (Rahul Sharma)
@@ -15,10 +15,9 @@ test.describe('Rajasvi Decor - User Lead Status Update & Follow-up Calculation R
     await dashboardPage.goto();
     await expect(dashboardPage.dashboardContainer).toBeVisible();
 
-    // Verify [Calls Made] and [WhatsApp] exist (noting they have no operational meaning right now)
+    // Verify [Calls Made] exists (noting it has no operational meaning right now)
     const callsMade = await dashboardPage.getStatCardValue('Calls Made');
-    const whatsApp = await dashboardPage.getStatCardValue('WhatsApp');
-    console.log(`[Informational] Calls Made: ${callsMade}, WhatsApp: ${whatsApp} (Currently placeholders)`);
+    console.log(`[Informational] Calls Made: ${callsMade} (Currently placeholder)`);
 
     // Verify Follow-ups count aligns with sum(Follow-up Pending + In Follow Up)
     const followupsStat = await dashboardPage.getFollowupsStatCardValue();

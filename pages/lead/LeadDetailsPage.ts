@@ -767,6 +767,26 @@ export class LeadDetailsPage extends BasePage {
   readonly samplesTab: Locator;
   readonly addressTab: Locator;
   readonly invoiceTab: Locator;
+  readonly meetingTab: Locator;
+  readonly reminderTab: Locator;
+
+  // Meeting Tab Elements
+  readonly meetingAllDaySwitch: Locator;
+  readonly meetingInviteEmailInput: Locator;
+  readonly meetingTitleInput: Locator;
+  readonly meetingDateInput: Locator;
+  readonly meetingDurationDropdown: Locator;
+  readonly meetingStartTimeInput: Locator;
+  readonly meetingEndTimeInput: Locator;
+  readonly meetingTypeDropdown: Locator;
+  readonly meetingDescriptionTextarea: Locator;
+  readonly meetingSignatureCheckbox: Locator;
+  readonly meetingDisclaimerCheckbox: Locator;
+  readonly meetingStatusDropdown: Locator;
+  readonly meetingSaveBtn: Locator;
+  readonly meetingsTable: Locator;
+  readonly meetingsRows: Locator;
+  readonly meetingsEmptyRow: Locator;
 
   // Overview Summary Cards
   readonly requirementSummaryCard: Locator;
@@ -866,6 +886,26 @@ export class LeadDetailsPage extends BasePage {
     this.samplesTab = page.locator('.p-tabmenuitem:has-text("Sample")');
     this.addressTab = page.locator('.p-tabmenuitem:has-text("Address")');
     this.invoiceTab = page.locator('.p-tabmenuitem:has-text("Invoice")');
+    this.meetingTab = page.locator('.p-tabmenuitem:has-text("Meeting")');
+    this.reminderTab = page.locator('.p-tabmenuitem:has-text("Reminder")');
+
+    // Meeting Tab Components
+    this.meetingAllDaySwitch = page.locator('.p-inputswitch:has(input[role="switch"])');
+    this.meetingInviteEmailInput = page.locator('input[placeholder*="Type email"]');
+    this.meetingTitleInput = page.locator('input[name="meetingTitle"]');
+    this.meetingDateInput = page.locator('input[name="meetingDate"]');
+    this.meetingDurationDropdown = page.locator('div.p-dropdown:has(select[name="meetingDuration"]), div:has(> label[for="meetingDuration"]) .p-dropdown');
+    this.meetingStartTimeInput = page.locator('input[name="startDateTime"]');
+    this.meetingEndTimeInput = page.locator('input[name="endDateTime"]');
+    this.meetingTypeDropdown = page.locator('div.p-dropdown:has(select[name="meetingLinkType"]), div:has(> label[for="meetingLinkType"]) .p-dropdown');
+    this.meetingDescriptionTextarea = page.locator('textarea[name="description"]');
+    this.meetingSignatureCheckbox = page.locator('input#includeSignature');
+    this.meetingDisclaimerCheckbox = page.locator('input#includeDisclaimer');
+    this.meetingStatusDropdown = page.locator('div.p-dropdown:has(select[name="meetingStatusType"]), div:has(> label[for="meetingStatusType"]) .p-dropdown');
+    this.meetingSaveBtn = page.locator('button[type="submit"]:has-text("Save"), button[aria-label="Save"]');
+    this.meetingsTable = page.locator('table.p-datatable-table').last();
+    this.meetingsRows = page.locator('table.p-datatable-table tbody tr:not(.p-datatable-emptymessage)');
+    this.meetingsEmptyRow = page.locator('tr.p-datatable-emptymessage');
 
     // Overview Cards
     this.requirementSummaryCard = page.locator('div:has-text("Requirement Summary")').first();
@@ -933,10 +973,49 @@ export class LeadDetailsPage extends BasePage {
   /**
    * Select a tab from the segmented pill bar
    */
-  async selectTab(tabName: 'Overview' | 'Requirements' | 'Products' | 'Customization' | 'Samples' | 'Sample' | 'Address' | 'Invoice'): Promise<void> {
+  async selectTab(tabName: 'Overview' | 'Requirements' | 'Products' | 'Customization' | 'Samples' | 'Sample' | 'Address' | 'Invoice' | 'Meeting' | 'Reminder'): Promise<void> {
     const tabLocator = this.page.locator('.p-tabmenuitem').filter({ hasText: new RegExp(tabName, 'i') }).locator('a').first();
     await this.click(tabLocator, `${tabName} Tab`);
     await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * Schedule a new meeting under the Meeting tab
+   */
+  async scheduleMeeting(details: {
+    title: string;
+    date?: string;
+    startTime?: string;
+    duration?: string;
+    meetingType?: string;
+    description?: string;
+    allDay?: boolean;
+  }): Promise<void> {
+    await this.selectTab('Meeting');
+    await this.type(this.meetingTitleInput, details.title, 'Meeting Title');
+
+    if (details.date) {
+      await this.meetingDateInput.fill(details.date);
+    }
+    if (details.startTime) {
+      await this.meetingStartTimeInput.fill(details.startTime);
+    }
+    if (details.description) {
+      await this.type(this.meetingDescriptionTextarea, details.description, 'Meeting Description');
+    }
+    await this.click(this.meetingSaveBtn, 'Save Meeting Button');
+    await this.page.waitForTimeout(1000);
+  }
+
+  /**
+   * Get count of scheduled meetings from the Meeting tab table
+   */
+  async getMeetingsCount(): Promise<number> {
+    await this.selectTab('Meeting');
+    if (await this.meetingsEmptyRow.isVisible({ timeout: 2000 }).catch(() => false)) {
+      return 0;
+    }
+    return await this.meetingsRows.count();
   }
 
   /**
