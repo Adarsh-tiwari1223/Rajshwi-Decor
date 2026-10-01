@@ -11,7 +11,7 @@ test.describe('Rajasvi Decor - Lead Details Sequential Flow (Overview -> Require
     await loginPage.login(priya.email, priya.password);
   });
 
-  test('RD_LIFECYCLE_01: Verify all 7 tabs and perform actions in exact sequential order', async ({ myLeadPage, leadDetailsPage }) => {
+  test('RD_LIFECYCLE_01: Verify all 8 tabs and perform actions in exact sequential order', async ({ myLeadPage, leadDetailsPage }) => {
     // =========================================================================
     // STEP 0: Navigate to My Lead and open first Lead Details
     // =========================================================================
@@ -257,60 +257,16 @@ test.describe('Rajasvi Decor - Lead Details Sequential Flow (Overview -> Require
     console.log('[Step 4: Customization] PASSED: Customization modal and dynamic cards submitted and verified.');
 
     // =========================================================================
-    // STEP 5: SAMPLES TAB
+    // STEP 5: ADDRESS TAB
     // =========================================================================
-    console.log('[Step 5: Samples] Navigating to Samples tab...');
-    await leadDetailsPage.selectTab('Samples');
-    await expect(leadDetailsPage.samplesTab).toHaveClass(/p-highlight/);
-
-    // Verify Scoped Requirement dropdown
-    await expect(leadDetailsPage.samplesTabRequirementDropdown).toBeVisible();
-    const sampleReq = await leadDetailsPage.samplesTabRequirementDropdown.locator('.p-dropdown-label').innerText();
-    console.log(`[Step 5: Samples] Samples tab scoped to Requirement: "${sampleReq}"`);
-    expect(sampleReq.length).toBeGreaterThan(0);
-
-    // Open Add Sample Modal
-    console.log(']: Clicking element: Add Sample Button');
-    await leadDetailsPage.openAddSampleModal();
-    const sampleModal = leadDetailsPage.addSampleModal;
-    await expect(sampleModal.modalTitle).toHaveText('Add Sample');
-
-    // Fill Add Sample Form
-    const selectedSampleProd = await sampleModal.selectProduct();
-    console.log(`[Step 5: Samples] Selected Sample Product: ${selectedSampleProd}`);
-    await sampleModal.selectSampleType('Free');
-    await sampleModal.fillQuantity(1);
-    await sampleModal.selectFragrance('Lavender');
-    await sampleModal.setRequiredBy('29-09-2026');
-
-    // Submit Sample and verify in table
-    await sampleModal.clickSubmit();
-    await sampleModal.waitForClosed(10000);
-    console.log('[Step 5: Samples] Sample submitted and modal closed.');
-
-    // Verify newly added sample in Samples table
-    await leadDetailsPage.page.waitForTimeout(1000);
-    await expect(leadDetailsPage.samplesTable).toBeVisible();
-    const sampleRowCount = await leadDetailsPage.samplesRows.count();
-    console.log(`[Step 5: Samples] Total sample rows in table: ${sampleRowCount}`);
-    expect(sampleRowCount).toBeGreaterThanOrEqual(1);
-
-    const firstSampleRow = leadDetailsPage.samplesRows.first();
-    await expect(firstSampleRow).toContainText('Free');
-    await expect(firstSampleRow).toContainText('Pending');
-    console.log('[Step 5: Samples] PASSED: Free sample created, submitted, and verified in table with status Pending.');
-
-    // =========================================================================
-    // STEP 6: ADDRESS TAB
-    // =========================================================================
-    console.log('[Step 6: Address] Navigating to Address tab...');
+    console.log('[Step 5: Address] Navigating to Address tab...');
     await leadDetailsPage.selectTab('Address');
     await expect(leadDetailsPage.addressTab).toHaveClass(/p-highlight/);
 
     // Verify Scoped Requirement selector on Address tab
     await expect(leadDetailsPage.addressTabRequirementDropdown).toBeVisible();
     const addressReqText = await leadDetailsPage.addressTabRequirementDropdown.locator('.p-dropdown-label').innerText();
-    console.log(`[Step 6: Address] Address tab scoped to Requirement: "${addressReqText}"`);
+    console.log(`[Step 5: Address] Address tab scoped to Requirement: "${addressReqText}"`);
     expect(addressReqText.length).toBeGreaterThan(0);
 
     // Verify Address Content Container & Delivery Address Sections
@@ -329,21 +285,21 @@ test.describe('Rajasvi Decor - Lead Details Sequential Flow (Overview -> Require
     // Verify Status column shows "In use"
     await expect(leadDetailsPage.inUseAddressBadge.first()).toBeVisible();
     const inUseStatusText = await leadDetailsPage.inUseAddressBadge.first().innerText();
-    console.log(`[Step 6: Address] Verified Address Status: "${inUseStatusText}"`);
+    console.log(`[Step 5: Address] Verified Address Status: "${inUseStatusText}"`);
     expect(inUseStatusText).toContain('In use');
-    console.log('[Step 6: Address] PASSED: Address tab, requirement scoping, "Use this Address" action, and "In use" status verified.');
+    console.log('[Step 5: Address] PASSED: Address tab, requirement scoping, "Use this Address" action, and "In use" status verified.');
 
     // =========================================================================
-    // STEP 7: INVOICE TAB
+    // STEP 6: INVOICE TAB
     // =========================================================================
-    console.log('[Step 7: Invoice] Navigating to Invoice tab...');
+    console.log('[Step 6: Invoice] Navigating to Invoice tab...');
     await leadDetailsPage.selectTab('Invoice');
     await expect(leadDetailsPage.invoiceTab).toHaveClass(/p-highlight/);
 
     // Verify Scoped Requirement selector on Invoice tab
     await expect(leadDetailsPage.invoiceTabRequirementDropdown).toBeVisible();
     const invoiceReqText = await leadDetailsPage.invoiceTabRequirementDropdown.locator('.p-dropdown-label').innerText();
-    console.log(`[Step 7: Invoice] Invoice tab scoped to Requirement: "${invoiceReqText}"`);
+    console.log(`[Step 6: Invoice] Invoice tab scoped to Requirement: "${invoiceReqText}"`);
     expect(invoiceReqText.length).toBeGreaterThan(0);
 
     // Open Generate Invoice Modal
@@ -365,25 +321,43 @@ test.describe('Rajasvi Decor - Lead Details Sequential Flow (Overview -> Require
     // Generate Invoice and verify modal closes
     await invModal.clickGenerateInvoice();
     await invModal.waitForClosed(20000).catch(() => {});
-    console.log('[Step 7: Invoice] Invoice generated and modal closed.');
+    console.log('[Step 6: Invoice] Invoice generated and modal closed.');
 
     // Verify newly generated invoice reflected in Invoices table
     await leadDetailsPage.page.waitForTimeout(1500);
     await expect(leadDetailsPage.invoicesTable).toBeVisible();
     await leadDetailsPage.invoicesRows.first().waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
     const invoiceRowCount = await leadDetailsPage.invoicesRows.count();
-    console.log(`[Step 7: Invoice] Total invoices in table: ${invoiceRowCount}`);
+    console.log(`[Step 6: Invoice] Total invoices in table: ${invoiceRowCount}`);
     expect(invoiceRowCount).toBeGreaterThanOrEqual(1);
 
     const firstInvoiceRow = leadDetailsPage.invoicesRows.first();
     const invoiceNoText = await firstInvoiceRow.locator('td').nth(0).innerText();
-    console.log(`[Step 7: Invoice] Generated Invoice Number: "${invoiceNoText.trim()}"`);
+    console.log(`[Step 6: Invoice] Generated Invoice Number: "${invoiceNoText.trim()}"`);
     expect(invoiceNoText.trim().length).toBeGreaterThan(0);
-    console.log('[Step 7: Invoice] PASSED: Invoice generated and verified in Invoices table.');
+    console.log('[Step 6: Invoice] PASSED: Invoice generated and verified in Invoices table.');
+
+    // =========================================================================
+    // STEP 7: MEETING TAB
+    // =========================================================================
+    console.log('[Step 7: Meeting] Navigating to Meeting tab...');
+    await leadDetailsPage.selectTab('Meeting');
+    await expect(leadDetailsPage.meetingTab).toHaveClass(/p-highlight/);
+    await expect(leadDetailsPage.meetingTitleInput).toBeVisible();
+    await expect(leadDetailsPage.meetingsTable).toBeVisible();
+    console.log('[Step 7: Meeting] PASSED: Meeting tab and scheduling form verified.');
+
+    // =========================================================================
+    // STEP 8: REMINDER TAB
+    // =========================================================================
+    console.log('[Step 8: Reminder] Navigating to Reminder tab...');
+    await leadDetailsPage.selectTab('Reminder');
+    await expect(leadDetailsPage.reminderTab).toHaveClass(/p-highlight/);
+    console.log('[Step 8: Reminder] PASSED: Reminder tab active and verified.');
 
     console.log('=========================================================================');
-    console.log('ALL 7 TABS VERIFIED IN RESPECTED SEQUENCE SUCCESSFULLY!');
-    console.log('Overview -> Requirements -> Products -> Customization -> Samples -> Address -> Invoice');
+    console.log('ALL 8 TABS VERIFIED IN RESPECTED SEQUENCE SUCCESSFULLY!');
+    console.log('Overview -> Requirements -> Products -> Customization -> Address -> Invoice -> Meeting -> Reminder');
     console.log('=========================================================================');
   });
 });

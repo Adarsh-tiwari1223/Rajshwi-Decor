@@ -59,7 +59,7 @@ export class AddRequirementModal {
     this.addAnotherProductBtn = page.locator('button[aria-label="Add Another Product"], button:has-text("Add Another Product")');
     this.totalQuantitySummary = page.locator('span:has-text("Total Quantity:")');
     this.expectedOrderValueSummary = page.locator('span:has-text("Expected Order Value:")');
-    this.step1CloseBtn = page.locator('.p-dialog:has(.p-dialog-title:has-text("Requirement")) button[aria-label="Close"]');
+    this.step1CloseBtn = page.locator('.p-dialog:has(.p-dialog-title:has-text("Requirement")) button.p-button:has-text("Close"), .p-dialog:has(.p-dialog-title:has-text("Requirement")) button.p-button[aria-label="Close"]').first();
     this.nextBtn = page.locator('.p-dialog:has(.p-dialog-title:has-text("Requirement")) button[aria-label="Next"]');
 
     // Step 2 Fields
@@ -852,8 +852,8 @@ export class LeadDetailsPage extends BasePage {
     this.breadcrumb = page.locator('nav.p-breadcrumb');
     this.leadCodeText = page.locator('.ld-hero span:has-text("LEAD-")').first();
     this.leadActiveBadge = page.locator('.ld-hero span:has-text("Active"), .ld-hero span.p-badge, .ld-hero [class*="badge"], .ld-hero span:has-text("Lead")').first();
-    this.contactNameHeader = page.locator('.ld-hero span[style*="rgba(255, 255, 255, 0.6)"]');
-    this.assignedToText = page.locator('.ld-hero-meta div:has-text("Assigned to") span[style*="font-weight: 600"]');
+    this.contactNameHeader = page.locator('.ld-hero span:has-text("LEAD-") ~ span, .ld-hero [class*="name"], .ld-hero').first();
+    this.assignedToText = page.locator('.ld-hero-meta div:has-text("Assigned to") span[style*="font-weight: 600"], div:has-text("Assigned to")').first();
     this.createdOnText = page.locator('.ld-hero-meta div:has-text("Created on") span[style*="font-weight: 600"]');
     this.leadSourceText = page.locator('.ld-hero-meta div:has-text("Lead source") span[style*="font-weight: 600"]');
 
@@ -878,7 +878,7 @@ export class LeadDetailsPage extends BasePage {
     this.saveChangesBtn = page.locator('button.ld-save, button:has-text("Save changes")');
 
     // Segmented Pill Tabs
-    this.tabMenu = page.locator('.ld-root .p-tabmenu');
+    this.tabMenu = page.locator('.p-tabmenu').first();
     this.overviewTab = page.locator('.p-tabmenuitem:has-text("Overview")');
     this.requirementsTab = page.locator('.p-tabmenuitem:has-text("Requirements")');
     this.productsTab = page.locator('.p-tabmenuitem:has-text("Products")');

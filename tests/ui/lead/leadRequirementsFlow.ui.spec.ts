@@ -79,8 +79,9 @@ test.describe('Rajasvi Decor - Lead Details Requirements Tab & 2-Step Wizard Flo
     await leadDetailsPage.requirementModal.selectPriceType(0, 'Retail');
 
     // 3. Verify additional fields appear: Channel, Min Quantity, Max Quantity, Selling Price
-    const channelDropdown = leadDetailsPage.page.locator('div.p-dropdown:has(select[name="products.0.channel"])');
+    const channelDropdown = leadDetailsPage.page.locator('div.p-dropdown:has(select[name="products.0.channel"]), div:has(> label:has-text("Channel")) div.p-dropdown, div.p-dropdown:has-text("Select Channel")').first();
     await expect(channelDropdown).toBeVisible();
+    await leadDetailsPage.requirementModal.selectChannel(0);
 
     const minQtyBox = leadDetailsPage.page.locator('div:has(> label:has-text("Min Quantity")) div').first();
     const sellingPriceBox = leadDetailsPage.page.locator('div:has(> label:has-text("Selling Price")) div').first();

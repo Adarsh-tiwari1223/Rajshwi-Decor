@@ -58,21 +58,26 @@ test.describe('Lead Module - Lead Details (leadDetails) UI Test Suite', () => {
     await expect(leadDetailsPage.saveChangesBtn).toBeVisible();
   });
 
-  test('RD_LDD_04: Verify the 6 Segmented Pill Tabs menu and tab switching', async ({ myLeadPage, leadDetailsPage, page }) => {
+  test('RD_LDD_04: Verify the 8 Segmented Pill Tabs menu and tab switching', async ({ myLeadPage, leadDetailsPage, page }) => {
     await myLeadPage.clickContactName(0);
     await page.waitForURL('**/leadDetails**', { timeout: 10000 });
 
-    // Verify all 6 Segmented Tabs exist
+    // Verify all 8 Segmented Tabs exist
     await expect(leadDetailsPage.overviewTab).toBeVisible();
     await expect(leadDetailsPage.requirementsTab).toBeVisible();
     await expect(leadDetailsPage.productsTab).toBeVisible();
     await expect(leadDetailsPage.customizationTab).toBeVisible();
     await expect(leadDetailsPage.addressTab).toBeVisible();
     await expect(leadDetailsPage.invoiceTab).toBeVisible();
+    await expect(leadDetailsPage.meetingTab).toBeVisible();
+    await expect(leadDetailsPage.reminderTab).toBeVisible();
 
     // Switch between tabs
     await leadDetailsPage.selectTab('Requirements');
     await expect(leadDetailsPage.requirementsTab).toHaveClass(/p-highlight/);
+
+    await leadDetailsPage.selectTab('Meeting');
+    await expect(leadDetailsPage.meetingTab).toHaveClass(/p-highlight/);
 
     await leadDetailsPage.selectTab('Overview');
     await expect(leadDetailsPage.overviewTab).toHaveClass(/p-highlight/);

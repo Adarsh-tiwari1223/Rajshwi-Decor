@@ -138,7 +138,7 @@ export class DashboardPage extends BasePage {
    */
   async getFunnelStageCount(stageName: string): Promise<number> {
     // 1. Check primary stages in SVG
-    const svgGroup = this.page.locator(`svg[aria-label="Lead funnel by status"] g`).filter({ has: this.page.locator(`text:has-text("${stageName}")`) }).first();
+    const svgGroup = this.page.locator(`svg[aria-label="Lead funnel by status"] g`).filter({ hasText: new RegExp(stageName, 'i') }).first();
     if (await svgGroup.isVisible({ timeout: 1500 }).catch(() => false)) {
       // First <text> element inside stage group contains the numeric count (SVG elements use textContent)
       const countText = (await svgGroup.locator('text').first().textContent()) || '';
@@ -146,9 +146,9 @@ export class DashboardPage extends BasePage {
     }
 
     // 2. Check 'Other statuses' secondary list on the right
-    const sideItem = this.page.locator(`div:has(> span[title="${stageName}"])`).first();
+    const sideItem = this.page.locator(`div:has(> span[title="${stageName}"]), div:has(> span:text-is("${stageName}")), div:has(> div:text-is("${stageName}"))`).first();
     if (await sideItem.isVisible({ timeout: 1500 }).catch(() => false)) {
-      const countSpan = sideItem.locator('span').last();
+      const countSpan = sideItem.locator('span, div').last();
       const countText = (await countSpan.textContent()) || '';
       return parseInt(countText.trim(), 10) || 0;
     }
