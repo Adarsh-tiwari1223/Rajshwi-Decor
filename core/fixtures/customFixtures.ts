@@ -5,6 +5,8 @@ import { ContactPage } from '../../pages/lead/ContactPage';
 import { MyLeadPage } from '../../pages/lead/MyLeadPage';
 import { LeadDetailsPage } from '../../pages/lead/LeadDetailsPage';
 import { ProductMasterPage } from '../../pages/masters/ProductMasterPage';
+import { LeadProgressReportPage } from '../../pages/reports/LeadProgressReportPage';
+import { LoginHistoryPage } from '../../pages/reports/LoginHistoryPage';
 import { AuthApiClient } from '../api/AuthApiClient';
 import { RoleApiClient } from '../api/RoleApiClient';
 import { UserApiClient } from '../api/UserApiClient';
@@ -21,6 +23,8 @@ type CustomFixtures = {
   myLeadPage: MyLeadPage;
   leadDetailsPage: LeadDetailsPage;
   productMasterPage: ProductMasterPage;
+  leadProgressReportPage: LeadProgressReportPage;
+  loginHistoryPage: LoginHistoryPage;
   authApiClient: AuthApiClient;
   roleApiClient: RoleApiClient;
   userApiClient: UserApiClient;
@@ -67,6 +71,16 @@ export const test = base.extend<CustomFixtures>({
   productMasterPage: async ({ page }, use) => {
     const productMasterPage = new ProductMasterPage(page);
     await use(productMasterPage);
+  },
+
+  leadProgressReportPage: async ({ page }, use) => {
+    const leadProgressReportPage = new LeadProgressReportPage(page);
+    await use(leadProgressReportPage);
+  },
+
+  loginHistoryPage: async ({ page }, use) => {
+    const loginHistoryPage = new LoginHistoryPage(page);
+    await use(loginHistoryPage);
   },
 
   authApiClient: async ({ request }, use) => {

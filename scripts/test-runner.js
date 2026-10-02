@@ -41,7 +41,7 @@ console.log(`\x1b[34m[Test Runner] Executing: npx playwright test ${filteredArgs
 const isWindows = process.platform === 'win32';
 const npxCmd = isWindows ? 'npx.cmd' : 'npx';
 
-const result = spawnSync(npxCmd, ['playwright', 'test', ...filteredArgs], {
+const result = spawnSync(npxCmd, ['--no-install', 'playwright', 'test', ...filteredArgs], {
   stdio: 'inherit',
   env: process.env,
   shell: true,

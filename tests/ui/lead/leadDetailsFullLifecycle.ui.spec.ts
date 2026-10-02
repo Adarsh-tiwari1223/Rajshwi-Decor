@@ -80,7 +80,7 @@ test.describe('Rajasvi Decor - Lead Details Sequential Flow (Overview -> Require
     const dynamicQty = Math.floor(Math.random() * 4) + 2;
     const dynamicPrice = 550 + Math.floor(Math.random() * 300);
     const dynamicPurpose = `Diwali Celebration ${dynamicSuffix}`;
-    const dynamicDeliveryDate = '29-09-2026';
+    const dynamicDeliveryDate = '15-10-2026';
     console.log(`[Step 2: Requirements] Dynamic Form Data -> Qty: ${dynamicQty}, Price: ₹${dynamicPrice}, Purpose: "${dynamicPurpose}", Date: ${dynamicDeliveryDate}`);
 
     // Toggle Price Type

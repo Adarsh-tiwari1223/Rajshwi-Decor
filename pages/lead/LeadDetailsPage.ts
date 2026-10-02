@@ -189,25 +189,26 @@ export class AddRequirementModal {
     await this.page.waitForTimeout(300);
   }
 
-  async setDeliveryDate(dateStr = '29-09-2026'): Promise<void> {
-    const input = this.deliveryDateInput;
-    await input.waitFor({ state: 'visible', timeout: 5000 });
-    await input.click();
-    await this.page.waitForTimeout(200);
+  async setDeliveryDate(dateStr = '15-10-2026'): Promise<void> {
+    const fieldContainer = this.page.locator('.p-dialog:visible div').filter({ hasText: /^Delivery Date/i }).first();
+    const input = fieldContainer.locator('input').first();
+    const calBtn = fieldContainer.locator('button').first();
 
-    // Clear and mimic real keystroke typing
-    await input.press('ControlOrMeta+A');
-    await input.press('Backspace');
-    await input.pressSequentially(dateStr, { delay: 100 });
-    await input.press('Tab');
-    await this.page.waitForTimeout(300);
-
-    // If calendar popup opened and is visible, dismiss it cleanly by clicking modal title
-    const datePicker = this.page.locator('.p-datepicker:visible');
-    if (await datePicker.isVisible({ timeout: 500 }).catch(() => false)) {
-      await this.modalTitle.click();
-      await this.page.waitForTimeout(200);
+    if (await calBtn.isVisible({ timeout: 1500 }).catch(() => false)) {
+      await calBtn.click();
+      const datePicker = this.page.locator('.p-datepicker:visible');
+      await datePicker.waitFor({ state: 'visible', timeout: 3000 });
+      const activeDays = datePicker.locator('.p-datepicker-calendar td:not(.p-datepicker-other-month) span:not(.p-disabled)');
+      const count = await activeDays.count();
+      if (count > 0) {
+        await activeDays.last().click();
+      }
+    } else if (await input.isVisible({ timeout: 1500 }).catch(() => false)) {
+      await input.click();
+      await input.fill(dateStr);
+      await input.press('Tab');
     }
+    await this.page.waitForTimeout(300);
   }
 
   async clickNext(): Promise<void> {
